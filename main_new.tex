@@ -267,47 +267,49 @@ These considerations can be structured in the form of a decision tree that can b
 % Alternative rendering (TikZ). This is meant as an editable draft; choose between the PDF above and the TikZ version below.
 \begin{figure}
     \centering
-    \footnotesize
+    \small
     \begin{tikzpicture}[
-        node/.style={draw, rounded corners, align=center, inner sep=3pt},
-        decision/.style={node, diamond, aspect=2, inner sep=1.5pt},
-        edge/.style={-{Latex[length=2mm]}, thick},
-        x=1cm, y=1cm
+        font=\small,
+        decision/.style={diamond, draw, aspect=2.2, align=center, inner sep=2pt},
+        box/.style={draw, rounded corners, align=center, text width=4.0cm, inner sep=4pt, fill=black!3},
+        edge from parent/.style={draw, -{Stealth[length=2mm]}, thick},
+        level 1/.style={sibling distance=7.8cm, level distance=2.0cm},
+        level 2/.style={sibling distance=4.5cm, level distance=2.0cm}
     ]
-        \node[decision] (start) {Outcome /\\ data type?};
-        \node[decision, right=2.8cm of start] (qtype) {Research\\ question?};
-
-        \node[node, above right=1.2cm and 2.8cm of start] (cat) {Categorical\\ (nominal/binary)};
-        \node[node, right=2.8cm of cat] (catdiff) {Group differences:\\ $\chi^2$ / Fisher};
-        \node[node, below=0.8cm of catdiff] (catassoc) {Association:\\ $\chi^2$ / Fisher\\ (or logistic models)};
-
-        \node[node, below right=1.2cm and 2.8cm of start] (ord) {Ordinal\\ (e.g., Likert)};
-        \node[decision, right=2.8cm of ord] (design) {Independent\\ or paired?};
-        \node[node, above right=0.9cm and 2.5cm of design] (mw) {2 groups (indep.):\\ Mann--Whitney};
-        \node[node, below right=0.9cm and 2.5cm of design] (wcx) {2 groups (paired):\\ Wilcoxon signed-rank};
-        \node[node, below=0.9cm of mw] (kw) {$>2$ groups:\\ Kruskal--Wallis\\ / Friedman (paired)};
-        \node[node, below=0.9cm of wcx] (spear) {Association:\\ Spearman};
-
-        \node[node, below=2.5cm of start] (cont) {Continuous\\ (interval/ratio)};
-        \node[node, right=2.8cm of cont] (contassoc) {Association:\\ Pearson (if assumptions)\\ or Spearman};
-        \node[node, above=0.9cm of contassoc] (tdiff) {2 groups:\\ t-test (indep./paired)\\ or non-parametric};
-
-        \draw[edge] (start) -- node[above]{categorical} (cat);
-        \draw[edge] (start) -- node[below]{ordinal} (ord);
-        \draw[edge] (start) -- node[left]{continuous} (cont);
-
-        \draw[edge] (cat) -- (qtype);
-        \draw[edge] (qtype) -- node[above]{differences} (catdiff);
-        \draw[edge] (qtype) -- node[below]{association} (catassoc);
-
-        \draw[edge] (ord) -- (design);
-        \draw[edge] (design) -- node[above]{indep.} (mw);
-        \draw[edge] (design) -- node[below]{paired} (wcx);
-        \draw[edge] (mw) -- (kw);
-        \draw[edge] (wcx) -- (spear);
-
-        \draw[edge] (cont) -- (contassoc);
-        \draw[edge] (contassoc) -- (tdiff);
+        \node[decision]{Outcome /\\ data type?}
+            child{ node[box]{Categorical\\(nominal/binary)}
+                child{ node[decision]{Research\\ question?}
+                    child{ node[box]{Differences between groups\\$\chi^2$ / Fisher}
+                        edge from parent node[above]{differences}
+                    }
+                    child{ node[box]{Association\\$\chi^2$ / Fisher\\(or logistic models)}
+                        edge from parent node[above]{association}
+                    }
+                }
+                edge from parent node[above]{categorical}
+            }
+            child{ node[box]{Ordinal\\(e.g., Likert)}
+                child{ node[decision]{Research\\ question?}
+                    child{ node[box]{Differences between groups\\2 groups: Mann--Whitney (indep.) / Wilcoxon (paired)\\$>2$ groups: Kruskal--Wallis / Friedman (paired)}
+                        edge from parent node[above]{differences}
+                    }
+                    child{ node[box]{Association\\Spearman}
+                        edge from parent node[above]{association}
+                    }
+                }
+                edge from parent node[above]{ordinal}
+            }
+            child{ node[box]{Continuous\\(interval/ratio)}
+                child{ node[decision]{Research\\ question?}
+                    child{ node[box]{Differences between groups\\2 groups: t-test (indep./paired)\\$>2$ groups: ANOVA\\(or non-parametric alternatives)}
+                        edge from parent node[above]{differences}
+                    }
+                    child{ node[box]{Association\\Pearson (if assumptions)\\or Spearman}
+                        edge from parent node[above]{association}
+                    }
+                }
+                edge from parent node[above]{continuous}
+            };
     \end{tikzpicture}
     \caption{Alternative decision tree (TikZ draft) for selecting a statistical test; included to allow easy editing and adaptation.}
     \label{fig:decisiontree-tikz}
