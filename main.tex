@@ -1,0 +1,680 @@
+\documentclass[graybox]{svmult}
+
+\usepackage{type1cm}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[bottom]{footmisc}
+\usepackage{hyperref}
+\usepackage{todonotes}
+
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+
+
+\def\exBPMNPetri{\textbf{Running Example A - Usefulness of BPMN vs Petri Nets}\\}
+\def\exAlg{\textbf{Running Example B - Algorithm performance}\\}
+
+\makeindex
+
+
+\begin{document}
+
+\title*{Statistics in BPM Research}
+% Use \titlerunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\author{Name of First Author and Name of Second Author}
+% Use \authorrunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\institute{Name of First Author \at Name, Address of Institute, \email{name@email.address}
+\and Name of Second Author \at Name, Address of Institute \email{name@email.address}}
+%
+% Use the package "url.sty" to avoid
+% problems with special characters
+% used in your e-mail or web address
+%
+\maketitle
+
+\abstract{Each chapter should be preceded by an abstract (no more than 200 words) that summarizes the content. The abstract will appear \textit{online} at \url{www.SpringerLink.com} and be available with unrestricted access. This allows unregistered users to read the abstract as a teaser for the complete chapter.\newline\indent
+Please use the 'starred' version of the \texttt{abstract} command for typesetting the text of the online abstracts (cf. source file of this chapter template \texttt{abstract}) and include them with the source files of your manuscript. Use the plain \texttt{abstract} command if the abstract is also to appear in the printed version of the book.}
+
+
+\section{Why Statistics in BPM?}
+\label{sec:intro}
+
+% - The role of statistics in BPM is to ensure trustworthy insights\\
+% - Applicability is both ``technical'' (e.g., evaluation of algorithms) and ``empirical'' (e.g., surveys, case studies)\\
+% - Running examples\\
+%     - Runtime of implementation of process mining algorithms vs number of attributes\\
+%     - Usefulness ratings of bpmn vs petri nets
+
+Business Process Management (BPM) is an interdisciplinary field that combines insights from computer science, information systems, and management. As such, BPM research spans a wide spectrum of study design: from highly technical evaluations of algorithms for process discovery or conformance checking, to empirical investigations of organizational factors such as adoption of tools or perceived usefulness of modelling notations. In all these settings, statistics play a central role.
+
+The role of statistics in BPM is hence to ensure that the conclusions we draw from our research are \textit{trustworthy} and \textit{generalizable}. Without statistics, we risk confusing random variations for meaningful findings, such as relying on anecdotal evidence to generalize beyond the data. Statistical analysis provides a methodological foundation for ensuring that BPM research is reliable, reproducible, and, ultimately, valid.
+
+Statistics is applicable in many of the challenges addressed in BPM, both ``technical'' and ``empirical''. In the following, two examples are provided.
+
+\begin{svgraybox}
+    \exBPMNPetri
+    A new research project aims to investigate how practitioners perceive the usefulness of different process modelling notations. More specifically, the plan is to ask our subjects to evaluate the usefulness of BPMN and Petri Nets on a 1-5 scale.
+\end{svgraybox}
+
+\begin{svgraybox}
+    \exAlg
+    A new discovery algorithm has been devised and implemented. The algorithm is tested against several different logs, each containing different numbers of attributes. The research now has to evaluate whether the runtime of the implementation is affected by the number of attributes that the algorithm has to go through.
+\end{svgraybox}
+
+These running examples will serve as reference points for the rest of the chapter, as they can demonstrate how a statistical approach to research can help in different research areas of BPM.
+
+
+\section{Background: Hypotheses, Probabilities, Effect Size, and Errors}
+\label{sec:background}
+
+One of the key areas in Statistics is Statistical Inference with~\textit{hypothesis testing} being its core task. Specifically, a statistical test evaluates whether the observed data are consistent with a pre-specified assumption 
+we have about the world, which is referred to as \emph{the hypothesis}. Without an hypothesis, there is no basis for deciding whether observations are surprising or expected, and thus no statistical test can be performed. Hypotheses provide the benchmark against which the observation should be judged, and therefore they define what ``no effect'' means and what kind of effect we aim to see. Such an ``hypothesis testing mindset'' is central to all applications of statistics in BPM, regardless of whether we are comparing algorithm performance, assessing survey responses, or evaluating process improvement interventions.
+
+
+\subsection{Formulating Hypotheses}
+
+A statistical test begins with the formulation of hypotheses. The so-called \textit{null hypothesis} ($H_0$) provides an assumption on the current state of the world. Often times, it states that there is no effect, no association, no difference between the groups in our observations. In other words, $H_0$ may represent the default position that any observed variation in our data is due to random chance and not to the effect under investigation.
+
+\begin{svgraybox}
+    \exBPMNPetri
+    A null hypothesis in this example scenario can state that practitioners find BPMN and Petri Nets equally useful. In this case, any observed difference in ratings (e.g., the average useful rating) would be attributed to, for example, a sampling issue rather than to a difference in perception.
+    
+    \vspace{1em}\noindent
+    $H_0$: ``Practitioners find BPMN and Petri Nets equally useful, so the means of the usefulness ratings between BPMN and Petri Nets are the same.''
+\end{svgraybox}
+
+\begin{svgraybox}
+    \exAlg
+    For the second running example, a null hypothesis we can formulate could consider no actual relationship between the runtime of the implementation of our algorithm and the number of attributes in the log being analyzed. Therefore, any relationship would be due to random fluctuations.
+    
+    \vspace{1em}\noindent
+    $H_0$: ``There is no relationship between runtime and the number of attributes.''
+\end{svgraybox}
+
+For statistical testing to be meaningful, it is important that the null hypothesis is properly formulated.
+The general meaning of the null hypothesis is that it should describe the \textit{status quo}, i.e., ``what we have to believe before we perform any experiments and observe any data''~\cite{Brockhoff2025IntroductionDTU}.
+Additionally, it is necessary that the null hypothesis is \textit{falsifiable}: it should be possible to gather data that shows evidence against it and thus would lead us to reject $H_0$.
+
+It is sometimes useful to explicitly state an \textit{alternative hypothesis}, $H_1$. Such a hypothesis represents what the researcher aims to support with the data, i.e., there is a genuine difference or effect in the collected data.
+The alternative hypothesis can be the complement of the null hypothesis. For example, if $H_0$ is ``means of the usefulness ratings between BPMN and Petri Nets are the same'', then $H_1$ can be ``the mean of one notation is higher or lower than the other''. This setting is sometimes called ``two-sided'' or ``non-directional''.
+In other cases, however, while the null hypothesis states that there is no difference in ratings between BPMN and Petri Nets,  the alternative hypothesis may explicitly mention that one notation has a higher average. This configuration is called ``one-sided'' or ``directional''.
+Please note that, in most situations, the two-sided approach should be applied~\cite{Brockhoff2025IntroductionDTU} since, when defining a null hypothesis, it can be challenging to speculate about a ``direction''.
+
+
+\subsection{Probability, Significance, and Errors}
+
+In order to evaluate our hypotheses, we rely on tests that evaluate probabilities and generate a ``$p$-value''. Such $p$-value represents the probability of observing the data we have collected, under the assumption that $H_0$ is true.
+A small $p$-value indicates that the observed data would be unlikely if there were no effect in place (i.e., what the null hypothesis should state), thus providing evidence against $H_0$.
+
+Please note that the $p$-value does not represent the probability that $H_0$ is true! Instead, it represents the probability of the observed data given that $H_0$ holds. A researcher can decide on the level of risk they are willing to accept in the observation of the data, and define a \textit{significance level} $\alpha$. If the $p$-value is less than $\alpha$, then we must reject the assumption that $H_0$ holds: it would be too unlikely that the observations are not caused by any effect.
+
+The choice of $\alpha$ reflects the ``risk tolerance'' of the researcher. A lower significance level (e.g., $\alpha = 0.01$) means that very strong evidence is required in order to reject $H_0$, reducing the chance of false positives but increasing the chance of false negatives. On the contrary, a higher significance level (e.g., $\alpha = 0.1$) makes it easier to reject $H_0$, at the expense of a higher risk of false positives.
+In many research disciplines, a ``cut-off'' level of $\alpha$ is 0.05~\cite{Parab2010ChoosingTest}.
+
+Considering our running examples:
+\begin{svgraybox}
+    \exBPMNPetri
+    $H_0$: Practitioners find BPMN and Petri Nets equally useful.
+    
+    In our fictional example, upon data collection, we execute our statistical test and obtain a $p$-value of 0.03. This can be interpreted as ``the probability of our ratings is 3\%, if we were to consider that practitioners find BPMN and Petri Nets equally useful.''
+    
+    We decide on $\alpha = 0.05$, and since $p<\alpha$ we must reject $H_0$: it's not true that practitioners find BPMN and Petri Nets equally useful.
+\end{svgraybox}
+
+\begin{svgraybox}
+    \exAlg
+    $H_0$: ``There is no relationship between runtime and number of attributes.''
+
+    In our fictional example, upon data collection, we execute our statistical test and obtain a $p$-value of 0.12. This can be interpreted as ``the probability of our observations is 12\% given that there is no relationship between runtime and number of attributes in the logs.''
+
+    We are willing to accept a higher risk, and decide on $\alpha = 0.1$, but since $p>\alpha$ we cannot reject $H_0$: we cannot reject that there is no relationship between runtime and number of attributes.
+    
+    For this reason, we stop the analysis of this hypothesis.
+\end{svgraybox}
+
+In the latter example, we obtained a $p$-value larger than our significance level $\alpha$. This means that we cannot reject $H_0$, but not that $H_0$ is true! Not rejecting the null hypothesis is not a statistical proof of the null hypothesis being true. More generally, the absence of evidence is not evidence of absence.
+
+As previously mentioned, the choice of significance level $\alpha$ also defines the type of error we may commit in our hypothesis testing. Two types of errors are usually distinguished:
+\begin{itemize}
+    \item Type I error: this occurs when we reject $H_0$ even though it is in fact true (i.e., a false positive). The probability of making a Type I error corresponds to the chosen significance level $\alpha$.
+    \item Type II error: this occurs when we do not reject $H_0$ even though $H_1$ is true (i.e., a false negative).
+\end{itemize}
+Please note that, in hypothesis testing, we can only control the risk of Type I error by adjusting $\alpha$ properly. Thus, the significance level reflects the researcher's risk appetite for Type I errors.
+
+Finally, while the $p$-value and the chosen $\alpha$ provide a structured ``mechanism'' for hypothesis testing, it is important to consider that the $p$-value reflects the probability of the observed data assuming $H_0$, but whether the value is ``small enough'' to reject $H_0$ depends on the research domain and the potential consequences of being wrong. What is acceptable in an exploratory BPM survey about notations' understandability may not be acceptable in the evaluation of compliance algorithms for mission-critical systems.
+Additionally, the absolute value of $p$ is important, not only whether it is significant or not. Considering a scenario where $\alpha=0.05$, both $p=0.000001$ and $p=0.049$ are formally significant, but they reflect very different strengths of the evidence. Similarly, a result with $p=0.051$ and another with $p=0.049$ are not necessarily very different, even though the former would be labelled as ``not significant.''\footnote{This aspect is particularly relevant, considering that some tools/libraries do not emphasize/hide the actual $p$-values in favour of just ``significant'' or ``not significant'' labels.}
+
+
+\subsection{Effect Size}
+
+Statistical significance of a test alone does not guarantee the practical relevance of the outcome. In certain situations, including in BPM research, it may happen that small differences become statistically significant. To quantify the magnitude of the observed differences, it is necessary to quantify how large the effect is and whether it is meaningful in practice.
+
+There are different ways to quantify the effect size, depending on the specific questions being asked. Most of the tools derive the effect size automatically when a statistical test is calculated. An example of effect sizes is the difference between two means. Oftentimes, however, when considering such a difference, it's useful to normalize it over the standard deviation to obtain Cohen's $d$. This allows us to have general ``rules of thumb'' to interpret the effect~\cite{Cohen1988StatisticalSciences}:
+\begin{itemize}
+    \item Small effect, $d=0.2$
+    \item Medium effect, $d= 0.5$
+    \item Large effect, $d= 0.8$
+\end{itemize}
+As the author states~\cite{Cohen1988StatisticalSciences}, however, it's important to be very cautious when using these conventional operational definitions.
+\begin{svgraybox}
+    \exBPMNPetri
+    $H_0$: Practitioners find BPMN and Petri Nets equally useful.\\
+    $p= 0.03$ and $\alpha = 0.05$, so statistically significant.
+
+    Data collected from 30 practitioners on a 1-5 scale. The average ratings are BPMN: 4.2; Petri Nets: 3.8, with a standard deviation of 1. Then $d = \frac{4.2-3.8}{1}=0.4$, suggesting an almost ``medium'' effect.
+\end{svgraybox}
+
+Other techniques to quantify the effect size may look at the correlation coefficient to measure the strength of the association between variables.
+
+In conclusion, reporting the effect size alongside the $p$-value ensures that the outcomes can be evaluated both from a \textit{statistical} and \textit{practical} significance: a result which is statistically significant but associated with a minimum effect size should be interpreted differently from one that is both significant and with a large effect size.
+
+
+\section{Hypothesis Testing Framework in BPM}
+\label{sec:method}
+
+It is possible to define a structured process in statistical testing, for BPM research as well as for other disciplines. Although the technical details may differ depending on the chosen tests, the general workflow is essentially the same.
+
+\subsection{General Workflow}
+
+% - general procedure\\
+%     - define h0/h1\\
+%     - choose significance level\\
+%     - collect and prepare data\\
+%     - choose suitable test\\
+%     - compute test statistics\\
+%     - reject/not reject h0\\
+% - importance of interpreting results beyond significant/not significant
+
+The general process for conducting a statistical test can be summarized in the following key steps:
+\begin{enumerate}
+    \item \textbf{Formulate hypotheses}: define the null hypothesis (and the alternate hypothesis). These should be clearly defined and, in particular, falsifiable. These hypotheses should drive the rest of the steps.
+    \item \textbf{Choose a significance level}: decide an acceptable level of risk for rejecting the null hypothesis ($\alpha$). This choice depends on the context, with a common value being 0.05 (with other typical values being 0.01 and 0.1, depending on risk appetite). While the significance level is important, it should not be used to blindly decide on rejection/not rejection of $H_0$.
+    \item \textbf{Collect and prepare data}: gather the observation and the data results relevant to falsify the hypothesis ensuring quality, cf. Chapter~\ref{}\todo{link to chapter}.
+    \item \textbf{Choose suitable test}: select the appropriate statistical test based on the data type, the study design, and the assumptions. 
+    %Our two running examples, for instance, will require completely different statistical tests. 
+    This aspect is discussed in \autoref{sec:test-selection}.
+    \item \textbf{Calculate the test statistic}: run the actual test to obtain the corresponding $p$-value and compute the effect size. We review the definition of some important tests in \autoref{sec:common-tests}.    
+    \item \textbf{Make a recision about $H_0$ and report}: analyze the obtained $p$-value, and compare it with the selected significance level to determine whether $H_0$ should be rejected or not. Results should also be reported, as discussed later in \autoref{sec:reporting}.
+\end{enumerate}
+
+It is essential to interpret the results in a nuanced manner rather than treating significance as a binary outcome. A $p$-value close to $\alpha$ does not constitute strong evidence, while a very small $p$-value indicates stronger evidence against $H_0$. As previously mentioned, not rejecting the null hypothesis does not mean accepting it: it simply means not having enough evidence against it.
+In addition, statistical significance should always be complemented by effect size.
+
+
+\subsection{Test Selection}
+\label{sec:test-selection}
+
+% - decision tree and how to navigate it
+A key challenge in hypothesis testing is choosing the right test for the research question at hand. There are different factors driving the selection, including:
+\begin{itemize}
+    \item The type of data (categorical vs continuous).
+    \item The type of question (grouping vs relationship between variables).
+    \item The study design (i.e., whether grouping was used).
+    \item The assumptions that can be made on the data population.
+\end{itemize}
+These considerations can be structured in the form of a decision tree that can be used to drive the identification of the correct test. Such a decision tree is depicted in \autoref{fig:decisiontree}.
+% 
+\begin{figure}
+    \centering
+    \includegraphics[angle=90,width=.9\linewidth]{images/decision-tree.pdf}
+    \caption{A decision tree to drive the identification of the correct statistical test to use.}
+    \label{fig:decisiontree}
+\end{figure}
+% 
+At the top level, it is necessary to select the correct type of data being analyzed:
+\begin{itemize}
+    \item Categorical: this should be considered when the data is binary or nominal, such as selection between two categories, or yes/no options.
+    \item Continuous: this should be considered when the data discusses intervals or ratios, such as runtimes or numerical ratings.
+\end{itemize}
+% 
+In the second layer, it is necessary to discuss the type of problem being investigated. In the tree, we discuss two possibilities:
+\begin{itemize}
+    \item Differences between groups: here, the goal is to determine whether our variable is expressing differences among groups (e.g., rate of a notation for experts/novices or for BPMN/Petri Nets).
+    \item Relationships between variables: in this case, the goal is to understand whether we observe two variables expressing the same behavior (e.g., execution time of an algorithm w.r.t. the number of attributes of the corresponding log).
+\end{itemize}
+Please note that when the variable is categorical, we do not consider the option of studying the relationship between variables.
+
+The third and fourth layers are significant only when the problem being investigated is about differences between groups. Layer three is about the number of groups being considered (either 2, for example, expert/novices; or more than 2, for example, BPMN/Petri Nets/DECLARE). Layer four asks whether the data comes from independent groups or from a ``block.'' This decision will have an impact on the selection of the statistical test.
+
+\begin{important}{Blocking}
+    Blocking is an experimental design technique that can be used to reduce the possible sources of variation and thus make the comparisons more precise. The idea is to group the individual data points into ``blocks'' that are internally similar. In this way, blocking can mitigate the effect of confounding variables.
+
+    For example, if we want to compare the useful ratings of two modelling notations, we might want to avoid the experience level of the subjects to influence the results. To control for this, we can decide to ``block by expertise'': each block contains the ratings coming from subjects with a similar expertise level and, in such blocks, both notations are evaluated.
+
+    A special case of blocking is with the ``paired'' design, where each subject forms its own block by contributing data under different conditions. The typical example of a paired design is with before/after studies, where a subject performs an exercise, then receives some training, and finally performs a new exercise.
+\end{important}
+
+The last layer is about the assumptions on the data. Specifically, we have two options:
+\begin{itemize}
+    \item Parametric setting: in this case, data is assumed to come from a population following a dedicated distribution that is characterized by a fixed set of parameters (e.g., a Normal distribution described by its mean and variance). Moreover, one assumes homogeneity of variance, which means that the data in each group has the same variance, and that data in each group is randomly sampled from the population. There are tests \todo{shall we discuss tests to check for the parametric requirement?} that can be used to confirm that the data at hand is meeting the parametric requirement.
+%    \item Parametric setting: in this case, data is assumed to come from a population following a Normal distribution, the data in each group have the same variance, and data in each group is randomly sampled from the population. There are tests that can be used to confirm that the data at hand is meeting the parametric requirement.
+    \item Non-parametric setting: this is the more general case, and can be safely applied regardless of the assumptions. The statistical tests, in this case, are less powerful but always applicable, so they represent a ``safer'' option.
+\end{itemize}
+% 
+Considering our example:
+\begin{svgraybox}
+    \exBPMNPetri
+    We considered 30 practitioners who evaluated the usefulness of BPMN and Petri Nets on a 1-5 scale.
+
+    The data is continuous, and it's about looking for differences between 2 groups (BPMN and Petri Nets). Since each subject evaluated both notations, the study is paired, and we do not make any assumption about the underlying data (i.e., non-parametric setting). Given these aspects, and following the tree in \autoref{fig:decisiontree}, we should go for the Wilcoxon Signed Rank test.
+\end{svgraybox}
+
+So far we treated the statistical tests as ``black boxes'' and we just discussed how to select the correct one. In the following section, we will discuss the most common tests.
+
+
+\subsection{Some Common Tests}
+\label{sec:common-tests}
+
+Next, we provide a brief overview of some of the most common statistical tests that can be used in BPM research. While a detailed mathematical formulation of the tests along with a discussion of their properties can be found in many statistical textbooks (see, for instance,~\cite{todo}), we here focus on their general idea and intuition. 
+
+\begin{description}
+\item[\textbf{Student's t-test.}]
+The test is for continuous data, comparing the means of two independent groups. It is commonly applied under the assumption that the data in each group is normally distributed and has equal variances, so that the test falls into the class of parametric tests. This test is referred to as a one-sample Student's t-test, when the one group is actually a sample drawn from a larger population. That is, the null hypothesis then states that the mean of the sample is equal to the population mean. 
+
+In general, to compute the $p$-value for a test, a test statistic is computed, which provides a quantification of the extent that the collected data provides evidence for the null hypothesis. In the case of the Student's t-test, the t-statistic is adopted. It is a ratio that sets the difference between the means of the two groups in relation to the standard error of this difference, which follows Student's t-distribution under the null hypothesis. 
+
+\item[\textbf{Paired t-test.}] 
+The test targets a very similar setting compared to the Student's t-test, meaning that data is continuous data, the means of two groups are compared, and that the data is normally distributed with equal variances. However, the two groups are no longer assumed to be independent, but paired. This means that each observation in one group is associated with a specific observation in the other group, for instance, in before/after studies as mentioned above.
+The null hypothesis then states that the means of the two groups are equal, so that the treatment administered between the two measurements has no effect.
+
+Technically, the paired t-test also relies on the t-statistic as a test statistic. That is, the difference of the means is normalized by the standard error of this difference to compute the $p$-value. 
+
+\item[\textbf{Mann-Whitney U test.}]
+This test has also been designed for ordinal data, i.e., data values are ranked, but not necessarily with equal gaps between subsequent values. While the test comes in different variations, it generally tests whether the distributions of two independent groups are identical, i.e., whether it is equally likely that a value from one group is larger or smaller than a value from the other group. Often it is also used to compare medians. In any case, it is a non-parametric test, so that it is typically applied when the assumptions of Student's t-test are not met. As such, it is adopted if the data is only ordinal, but not continuous, or if the data is not normally distributed.
+
+Technically, the $p$-value for this test is derived by the U-statistics. It is based on a comparison of the sums of the ranks derived for the observations of each sample. 
+
+\item[\textbf{Wilcoxon Signed Rank test.}]
+This non-parametric test is designed for continuous data. While a one-sample variation also exists for independent groups, it is most commonly adopted when two groups are paired, i.e., when each observation in one group is associated with a specific observation in the other group. As such, it is used if the assumptions for the paired t-test are not met, for instance, if the data is  not normally distributed (a weaker assumption on the symmetry of the distribution is imposed, though). Then, the null hypothesis states that the distributions of the two groups are identical, or put differently, that there are no differences between paired observations. 
+
+The respective test statistic is based on the ranks of the differences of the observations. For those differences, the sums of positive and negative ranks are computed, and the smaller of these two sums is used to derive the $p$-value. 
+
+\item[\textbf{Pearson's correlation.}]
+When assessing the relationship between two continuous variables, Pearson's correlation coefficient $r$ is often adopted. It quantifies the strength and direction of a linear relationship between the two variables. The value of $r$ ranges from -1 to 1, where values close to 1 indicate a strong positive linear relationship, values close to -1 indicate a strong negative linear relationship, and values around 0 suggest no linear relationship. 
+More specifically, it is computed as the covariance of the two variables (i.e., the expected value of the product of their deviations from their individual expected values) divided by the product of their standard deviations.
+
+Pearson's correlation coefficient $r$ may serve as a statistical test, with the test statistic being the value of $r$. That is, the null hypothesis states that there is no linear relationship between the two variables, i.e., that $r=0$. This test is valid under the assumption that both variables are normally distributed.
+
+\item[\textbf{Spearman's correlation.}]
+Spearman's correlation coefficient $\rho$ is a non-parametric measure of the strength and direction of the relationship between two variables. It is based on the ranks of the data rather than their actual values, making it suitable for ordinal data or when the assumptions for Pearson's correlation are not met. Similar to Pearson's $r$, the value of $\rho$ ranges from -1 to 1, with interpretations analogous to those of Pearson's correlation. Moreover, the definition of Spearman's $\rho$ follows the idea behind Pearson's $r$, i.e., it is defined as the covariance of the rank variables (replacing the observations by their ranks) divided by the product of their standard deviations.
+
+\end{description}
+
+\subsection{Reporting the Results}
+\label{sec:reporting}
+
+% - test name/statistics/p value/effect size\\
+% - example of reporting
+
+The final step of hypothesis testing is to report the results in a clear, transparent, and reproducibility-friendly way. A good report should always include:
+\begin{itemize}
+    \item A summary of the descriptive statistics that present the dataset (e.g., means, medians, standard deviations, sample size, etc.).
+    \item The name of the test that has been used.
+    \item The $p$-value resulting from the test, reported as an exact value rather than just ``$p<0.05$''. Together with this, the significance level should be discussed and, based on this, whether the test resulted in statistically significant outcomes.
+    \item The effect size, to communicate the actual magnitude of the effect.
+    \item Some conclusions, summarizing the results and how they can be interpreted.
+\end{itemize}
+
+The descriptive statistics provide some context and make the results interpretable. For example, knowing that BPMN was rated 4.2 on average, and Petri Nets 3.8 gives an intuition of the data, even before looking at the test results.
+
+Reporting only that a result was significant is not sufficient. As mentioned other times in this chapter, the effect size is an essential element, together with descriptive information, to interpret the strength and relevance of the result.
+
+Considering the running example:
+\begin{svgraybox}
+    \exBPMNPetri
+    $H_0$: Practitioners find BPMN and Petri Nets equally useful.
+    
+    Data collected from 30 practitioners on a 1-5 scale. The average ratings are BPMN: 4.2; Petri Nets: 3.8, with a standard deviation of 1. Then $d = \frac{4.2-3.8}{1}=0.4$, suggesting an almost ``medium'' effect.
+
+    The same experts evaluated both notations, and we did not make assumptions about the data, so we opted for the Wilcoxon Signed Rank test. $p = 0.03$ and $\alpha = 0.05$, so statistically significant.
+
+    We can conclude that experts rated BPMN significantly more useful than Petri Nets, with an almost medium effect size.
+\end{svgraybox}
+
+This format of reporting ensures that the statistical procedure is transparent with quantifiable evidence. Other researchers can evaluate the correctness of the procedure and future studies can, in principle, replicate them.
+
+
+\section{Typical Pitfalls and Misconceptions}
+\label{sec:pitfalls}
+
+% - over-reliance on p-values\\
+% - ignoring effect size\\
+% - misusing tests\\
+% - multiple testing without correction?\\
+% - spurious correlations
+
+Sound statistical testing is essential for credible BPM research, however there are typical pitfalls that often recur in practice. In this section, we highlight some of the most common problems.
+
+\paragraph{Over-reliance on $p$-values.}
+A common mistake is to assume that statistical significance corresponds to scientific importance: a $p$-value below $\alpha$ is sometimes treated as a sign of quality of the results. However, it only indicates that the observed data is unlikely under the assumption of $H_0$. It does not measure the size or the importance of the effect. Therefore, researchers should avoid thinking only in terms of significant/not significant and focus a bit more on the actual interpretation of the $p$-value.
+
+
+\paragraph{Ignoring effect size.}
+Related to the previous point, is the error of not computing and discussing the effect size. Without it, it is impossible to judge whether a statistically significant difference is practically relevant or not. For this reason, the effect size should always accompany $p$-values.
+
+\paragraph{Misusing tests.}
+Statistical tests must match the data type, the study design, and the assumptions. For example, if the same experts rate both BPMN and Petri Nets, a paired test should be used. Misusing tests can lead to errors and invalid conclusions and interpretations.
+
+% \paragraph{Multiple testing without correction} ???? TODO: discuss
+
+\paragraph{Spurious correlations.}
+Correlations can reveal meaningful relationships, but they can also be misleading. A statistically significant correlation does not imply causation, and apparent relationships may arise from confounding variables or simple coincidence, without a proper hypothesis formulated before correlations are computed. This phenomenon, also called data dredging or $p$-hacking, could represent a serious violation of academic integrity.\footnote{Tyler Vigen has compiled a fascinating collection of spurious correlations, with an explanation of the results and corresponding data sources. This website is available at \url{https://tylervigen.com/spurious-correlations}.}
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+\bibliographystyle{spmpsci}
+\bibliography{references-andrea}
+
+\end{document}
+
+
+\endinput
+
+
+\section{Section Heading}
+\label{sec:1}
+Use the template \emph{chapter.tex} together with the document class SVMono (monograph-type books) or SVMult (edited books) to style the various elements of your chapter content.
+
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations. And please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\section{Section Heading}
+\label{sec:2}
+% Always give a unique label
+% and use \ref{<label>} for cross-references
+% and \cite{<label>} for bibliographic references
+% use \sectionmark{}
+% to alter or adjust the section heading in the running head
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+Use the standard \verb|equation| environment to typeset your equations, e.g.
+%
+\begin{equation}
+a \times b = c\;,
+\end{equation}
+%
+however, for multiline equations we recommend to use the \verb|eqnarray| environment\footnote{In physics texts please activate the class option \texttt{vecphys} to depict your vectors in \textbf{\itshape boldface-italic} type - as is customary for a wide range of physical subjects}.
+\begin{eqnarray}
+\left|\nabla U_{\alpha}^{\mu}(y)\right| &\le&\frac1{d-\alpha}\int
+\left|\nabla\frac1{|\xi-y|^{d-\alpha}}\right|\,d\mu(\xi) =
+\int \frac1{|\xi-y|^{d-\alpha+1}} \,d\mu(\xi)  \\
+&=&(d-\alpha+1) \int\limits_{d(y)}^\infty
+\frac{\mu(B(y,r))}{r^{d-\alpha+2}}\,dr \le (d-\alpha+1)
+\int\limits_{d(y)}^\infty \frac{r^{d-\alpha}}{r^{d-\alpha+2}}\,dr
+\label{eq:01}
+\end{eqnarray}
+
+\subsection{Subsection Heading}
+\label{subsec:2}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references\index{cross-references} and citations\index{citations} as has already been described in Sect.~\ref{sec:2}.
+
+\begin{quotation}
+Please do not use quotation marks when quoting texts! Simply use the \verb|quotation| environment -- it will automatically be rendered in line with the preferred layout.
+\end{quotation}
+
+
+\subsubsection{Subsubsection Heading}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{subsec:2}, see also Fig.~\ref{fig:1}\footnote{If you copy text passages, figures, or tables from other works, you must obtain \textit{permission} from the copyright holder (usually the original publisher). Please enclose the signed permission with the manuscript. The sources\index{permission to print} must be acknowledged either in the captions, as footnotes or in a separate section of the book.}
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+% For figures use
+%
+\begin{figure}[b]
+\sidecaption
+% Use the relevant command for your figure-insertion program
+% to insert the figure file.
+% For example, with the graphicx style use
+\includegraphics[scale=.65]{figure}
+%
+% If no graphics program available, insert a blank space i.e. use
+%\picplace{5cm}{2cm} % Give the correct figure height and width in cm
+%
+\caption{If the width of the figure is less than 7.8 cm use the \texttt{sidecapion} command to flush the caption on the left side of the page. If the figure is positioned at the top of the page, align the sidecaption with the top of the figure -- to achieve this you simply need to use the optional argument \texttt{[t]} with the \texttt{sidecaption} command}
+\label{fig:1}       % Give a unique label
+\end{figure}
+
+
+\paragraph{Paragraph Heading} %
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+For typesetting numbered lists we recommend to use the \verb|enumerate| environment -- it will automatically rendered in line with the preferred layout.
+
+\begin{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\begin{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{enumerate}
+
+
+\subparagraph{Subparagraph Heading} In order to avoid simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}, see also Fig.~\ref{fig:2}.
+
+For unnumbered list we recommend to use the \verb|itemize| environment -- it will automatically be rendered in line with the preferred layout.
+
+\begin{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development, cf. Table~\ref{tab:1}.}
+\begin{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{itemize}
+
+\begin{figure}[t]
+\sidecaption[t]
+% Use the relevant command for your figure-insertion program
+% to insert the figure file.
+% For example, with the option graphics use
+\includegraphics[scale=.65]{figure}
+%
+% If no graphics program available, insert a blank space i.e. use
+%\picplace{5cm}{2cm} % Give the correct figure height and width in cm
+%
+%\caption{Please write your figure caption here}
+\caption{If the width of the figure is less than 7.8 cm use the \texttt{sidecapion} command to flush the caption on the left side of the page. If the figure is positioned at the top of the page, align the sidecaption with the top of the figure -- to achieve this you simply need to use the optional argument \texttt{[t]} with the \texttt{sidecaption} command}
+\label{fig:2}       % Give a unique label
+\end{figure}
+
+\runinhead{Run-in Heading Boldface Version} Use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+\subruninhead{Run-in Heading Boldface and Italic Version} Use the \LaTeX\ automatism for all your cross-refer\-ences and citations as has already been described in Sect.~\ref{sec:2}\index{paragraph}.
+
+\subsubruninhead{Run-in Heading Displayed Version} Use the \LaTeX\ automatism for all your cross-refer\-ences and citations as has already been described in Sect.~\ref{sec:2}\index{paragraph}.
+% Use the \index{} command to code your index words
+%
+% For tables use
+%
+\begin{table}[!t]
+\caption{Please write your table caption here}
+\label{tab:1}       % Give a unique label
+%
+% Follow this input for your own table layout
+%
+\begin{tabular}{p{2cm}p{2.4cm}p{2cm}p{4.9cm}}
+\hline\noalign{\smallskip}
+Classes & Subclass & Length & Action Mechanism  \\
+\noalign{\smallskip}\svhline\noalign{\smallskip}
+Translation & mRNA$^a$  & 22 (19--25) & Translation repression, mRNA cleavage\\
+Translation & mRNA cleavage & 21 & mRNA cleavage\\
+Translation & mRNA  & 21--22 & mRNA cleavage\\
+Translation & mRNA  & 24--26 & Histone and DNA Modification\\
+\noalign{\smallskip}\hline\noalign{\smallskip}
+\end{tabular}
+$^a$ Table foot note (with superscript)
+\end{table}
+%
+\section{Section Heading}
+\label{sec:3}
+% Always give a unique label
+% and use \ref{<label>} for cross-references
+% and \cite{<label>} for bibliographic references
+% use \sectionmark{}
+% to alter or adjust the section heading in the running head
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+If you want to list definitions or the like we recommend to use the enhanced \verb|description| environment -- it will automatically rendered in line with the preferred layout.
+
+\begin{description}[Type 1]
+\item[Type 1]{That addresses central themes pertainng to migration, health, and disease. In Sect.~\ref{sec:1}, Wilson discusses the role of human migration in infectious disease distributions and patterns.}
+\item[Type 2]{That addresses central themes pertainng to migration, health, and disease. In Sect.~\ref{subsec:2}, Wilson discusses the role of human migration in infectious disease distributions and patterns.}
+\end{description}
+
+\subsection{Subsection Heading} %
+In order to avoid simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Use the \LaTeX\ automatism for all your cross-references and citations citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\begin{svgraybox}
+If you want to emphasize complete paragraphs of texts we recommend to use the newly defined class option \verb|graybox| and the newly defined environment \verb|svgraybox|. This will produce a 15 percent screened box 'behind' your text.
+
+If you want to emphasize complete paragraphs of texts we recommend to use the newly defined class option and environment \verb|svgraybox|. This will produce a 15 percent screened box 'behind' your text.
+\end{svgraybox}
+
+
+\subsubsection{Subsubsection Heading}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\begin{theorem}
+Theorem text goes here.
+\end{theorem}
+%
+% or
+%
+\begin{definition}
+Definition text goes here.
+\end{definition}
+
+\begin{proof}
+%\smartqed
+Proof text goes here.
+%\qed
+\end{proof}
+
+\paragraph{Paragraph Heading} %
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+%
+% For built-in environments use
+%
+\begin{theorem}
+Theorem text goes here.
+\end{theorem}
+%
+\begin{definition}
+Definition text goes here.
+\end{definition}
+%
+\begin{proof}
+%\smartqed
+Proof text goes here.
+%\qed
+\end{proof}
+%
+\begin{trailer}{Trailer Head}
+If you want to emphasize complete paragraphs of texts in an \verb|Trailer Head| we recommend to
+use  \begin{verbatim}\begin{trailer}{Trailer Head}
+...
+\end{trailer}\end{verbatim}
+\end{trailer}
+%
+\begin{question}{Questions}
+If you want to emphasize complete paragraphs of texts in an \verb|Questions| we recommend to
+use  \begin{verbatim}\begin{question}{Questions}
+...
+\end{question}\end{verbatim}
+\end{question}
+\eject%
+\begin{important}{Important}
+If you want to emphasize complete paragraphs of texts in an \verb|Important| we recommend to
+use  \begin{verbatim}\begin{important}{Important}
+...
+\end{important}\end{verbatim}
+\end{important}
+%
+\begin{warning}{Attention}
+If you want to emphasize complete paragraphs of texts in an \verb|Attention| we recommend to
+use  \begin{verbatim}\begin{warning}{Attention}
+...
+\end{warning}\end{verbatim}
+\end{warning}
+
+\begin{programcode}{Program Code}
+If you want to emphasize complete paragraphs of texts in an \verb|Program Code| we recommend to
+use
+
+\verb|\begin{programcode}{Program Code}|
+
+\verb|\begin{verbatim}...\end{verbatim}|
+
+\verb|\end{programcode}|
+
+\end{programcode}
+%
+\begin{tips}{Tips}
+If you want to emphasize complete paragraphs of texts in an \verb|Tips| we recommend to
+use  \begin{verbatim}\begin{tips}{Tips}
+...
+\end{tips}\end{verbatim}
+\end{tips}
+\eject
+%
+\begin{overview}{Overview}
+If you want to emphasize complete paragraphs of texts in an \verb|Overview| we recommend to
+use  \begin{verbatim}\begin{overview}{Overview}
+...
+\end{overview}\end{verbatim}
+\end{overview}
+\begin{backgroundinformation}{Background Information}
+If you want to emphasize complete paragraphs of texts in an \verb|Background|
+\verb|Information| we recommend to
+use
+
+\verb|\begin{backgroundinformation}{Background Information}|
+
+\verb|...|
+
+\verb|\end{backgroundinformation}|
+\end{backgroundinformation}
+\begin{legaltext}{Legal Text}
+If you want to emphasize complete paragraphs of texts in an \verb|Legal Text| we recommend to
+use  \begin{verbatim}\begin{legaltext}{Legal Text}
+...
+\end{legaltext}\end{verbatim}
+\end{legaltext}
+%
+\begin{acknowledgement}
+If you want to include acknowledgments of assistance and the like at the end of an individual chapter please use the \verb|acknowledgement| environment -- it will automatically be rendered in line with the preferred layout.
+\end{acknowledgement}
+%
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+%
+%
+When placed at the end of a chapter or contribution (as opposed to at the end of the book), the numbering of tables, figures, and equations in the appendix section continues on from that in the main text. Hence please \textit{do not} use the \verb|appendix| command when writing an appendix at the end of your chapter or contribution. If there is only one the appendix is designated ``Appendix'', or ``Appendix 1'', or ``Appendix 2'', etc. if there is more than one.
+
+\begin{equation}
+a \times b = c
+\end{equation}
+
+
+\end{document}
