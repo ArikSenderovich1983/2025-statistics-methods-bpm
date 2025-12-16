@@ -267,50 +267,52 @@ These considerations can be structured in the form of a decision tree that can b
 % Alternative rendering (TikZ). This is meant as an editable draft; choose between the PDF above and the TikZ version below.
 \begin{figure}
     \centering
-    \small
+    % Keep this figure width-safe: resize to \linewidth and use compact node styles.
+    \resizebox{\linewidth}{!}{%
     \begin{tikzpicture}[
-        font=\small,
-        decision/.style={diamond, draw, aspect=2.2, align=center, inner sep=2pt},
-        box/.style={draw, rounded corners, align=center, text width=4.0cm, inner sep=4pt, fill=black!3},
-        edge from parent/.style={draw, -{Stealth[length=2mm]}, thick},
-        level 1/.style={sibling distance=7.8cm, level distance=2.0cm},
-        level 2/.style={sibling distance=4.5cm, level distance=2.0cm}
+        font=\scriptsize,
+        decision/.style={diamond, draw, aspect=2.1, align=center, inner sep=1.5pt},
+        box/.style={draw, rounded corners, align=center, text width=3.4cm, inner sep=3pt, fill=black!3},
+        edge from parent/.style={draw, -{Stealth[length=1.8mm]}, thick, shorten >=1pt, shorten <=1pt},
+        level 1/.style={sibling distance=6.6cm, level distance=1.75cm},
+        level 2/.style={sibling distance=3.8cm, level distance=1.75cm}
     ]
         \node[decision]{Outcome /\\ data type?}
             child{ node[box]{Categorical\\(nominal/binary)}
                 child{ node[decision]{Research\\ question?}
                     child{ node[box]{Differences between groups\\$\chi^2$ / Fisher}
-                        edge from parent node[above]{differences}
+                        edge from parent node[above, sloped]{differences}
                     }
                     child{ node[box]{Association\\$\chi^2$ / Fisher\\(or logistic models)}
-                        edge from parent node[above]{association}
+                        edge from parent node[above, sloped]{association}
                     }
                 }
-                edge from parent node[above]{categorical}
+                edge from parent node[above, sloped]{categorical}
             }
             child{ node[box]{Ordinal\\(e.g., Likert)}
                 child{ node[decision]{Research\\ question?}
                     child{ node[box]{Differences between groups\\2 groups: Mann--Whitney (indep.) / Wilcoxon (paired)\\$>2$ groups: Kruskal--Wallis / Friedman (paired)}
-                        edge from parent node[above]{differences}
+                        edge from parent node[above, sloped]{differences}
                     }
                     child{ node[box]{Association\\Spearman}
-                        edge from parent node[above]{association}
+                        edge from parent node[above, sloped]{association}
                     }
                 }
-                edge from parent node[above]{ordinal}
+                edge from parent node[above, sloped]{ordinal}
             }
             child{ node[box]{Continuous\\(interval/ratio)}
                 child{ node[decision]{Research\\ question?}
                     child{ node[box]{Differences between groups\\2 groups: t-test (indep./paired)\\$>2$ groups: ANOVA\\(or non-parametric alternatives)}
-                        edge from parent node[above]{differences}
+                        edge from parent node[above, sloped]{differences}
                     }
                     child{ node[box]{Association\\Pearson (if assumptions)\\or Spearman}
-                        edge from parent node[above]{association}
+                        edge from parent node[above, sloped]{association}
                     }
                 }
-                edge from parent node[above]{continuous}
+                edge from parent node[above, sloped]{continuous}
             };
     \end{tikzpicture}
+    }%
     \caption{Alternative decision tree (TikZ draft) for selecting a statistical test; included to allow easy editing and adaptation.}
     \label{fig:decisiontree-tikz}
 \end{figure}
