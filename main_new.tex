@@ -11,6 +11,7 @@
 % (main_new) Alternative decision tree rendered directly in LaTeX.
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{rotating}
 
 \usepackage{newtxtext}
 \usepackage{newtxmath}
@@ -265,57 +266,72 @@ These considerations can be structured in the form of a decision tree that can b
 \end{figure}
 %
 % Alternative rendering (TikZ). This is meant as an editable draft; choose between the PDF above and the TikZ version below.
-\begin{figure}
+% The TikZ variant is laid out left-to-right and can use (almost) a full page.
+\begin{sidewaysfigure}
     \centering
-    % Keep this figure width-safe: resize to \linewidth and use compact node styles.
-    \resizebox{\linewidth}{!}{%
+    \resizebox{0.95\textheight}{!}{%
     \begin{tikzpicture}[
-        font=\scriptsize,
-        decision/.style={diamond, draw, aspect=2.1, align=center, inner sep=1.5pt},
-        box/.style={draw, rounded corners, align=center, text width=3.4cm, inner sep=3pt, fill=black!3},
-        edge from parent/.style={draw, -{Stealth[length=1.8mm]}, thick, shorten >=1pt, shorten <=1pt},
-        level 1/.style={sibling distance=6.6cm, level distance=1.75cm},
-        level 2/.style={sibling distance=3.8cm, level distance=1.75cm}
+        font=\footnotesize,
+        box/.style={draw, rounded corners, align=center, inner sep=5pt, text width=3.4cm, fill=black!3},
+        decision/.style={draw, diamond, aspect=2.2, align=center, inner sep=2pt, text width=3.0cm, fill=white},
+        edge/.style={-{Stealth[length=2mm]}, thick},
+        lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize},
+        node distance=10mm and 14mm
     ]
-        \node[decision]{Outcome /\\ data type?}
-            child{ node[box]{Categorical\\(nominal/binary)}
-                child{ node[decision]{Research\\ question?}
-                    child{ node[box]{Differences between groups\\$\chi^2$ / Fisher}
-                        edge from parent node[above, sloped]{differences}
-                    }
-                    child{ node[box]{Association\\$\chi^2$ / Fisher\\(or logistic models)}
-                        edge from parent node[above, sloped]{association}
-                    }
-                }
-                edge from parent node[above, sloped]{categorical}
-            }
-            child{ node[box]{Ordinal\\(e.g., Likert)}
-                child{ node[decision]{Research\\ question?}
-                    child{ node[box]{Differences between groups\\2 groups: Mann--Whitney (indep.) / Wilcoxon (paired)\\$>2$ groups: Kruskal--Wallis / Friedman (paired)}
-                        edge from parent node[above, sloped]{differences}
-                    }
-                    child{ node[box]{Association\\Spearman}
-                        edge from parent node[above, sloped]{association}
-                    }
-                }
-                edge from parent node[above, sloped]{ordinal}
-            }
-            child{ node[box]{Continuous\\(interval/ratio)}
-                child{ node[decision]{Research\\ question?}
-                    child{ node[box]{Differences between groups\\2 groups: t-test (indep./paired)\\$>2$ groups: ANOVA\\(or non-parametric alternatives)}
-                        edge from parent node[above, sloped]{differences}
-                    }
-                    child{ node[box]{Association\\Pearson (if assumptions)\\or Spearman}
-                        edge from parent node[above, sloped]{association}
-                    }
-                }
-                edge from parent node[above, sloped]{continuous}
-            };
+        % Left-to-right, three lanes (categorical / ordinal / continuous)
+        \node[decision] (dtype) {Data type?};
+
+        \node[box, right=20mm of dtype, yshift=18mm] (cat) {Categorical\\(nominal/binary)};
+        \node[box, right=20mm of dtype] (ord) {Ordinal\\(e.g., Likert)};
+        \node[box, right=20mm of dtype, yshift=-18mm] (cont) {Continuous\\(interval/ratio)};
+
+        \draw[edge] (dtype) -- node[lab, above]{categorical} (cat);
+        \draw[edge] (dtype) -- node[lab, above]{ordinal} (ord);
+        \draw[edge] (dtype) -- node[lab, below]{continuous} (cont);
+
+        % Research question nodes
+        \node[decision, right=20mm of cat] (rq_cat) {Research\\question?};
+        \node[decision, right=20mm of ord] (rq_ord) {Research\\question?};
+        \node[decision, right=20mm of cont] (rq_cont) {Research\\question?};
+
+        \draw[edge] (cat) -- (rq_cat);
+        \draw[edge] (ord) -- (rq_ord);
+        \draw[edge] (cont) -- (rq_cont);
+
+        % Differences vs association (categorical)
+        \node[box, right=20mm of rq_cat, yshift=10mm] (cat_diff) {Differences\\between groups};
+        \node[box, right=20mm of rq_cat, yshift=-10mm] (cat_assoc) {Association};
+        \draw[edge] (rq_cat) -- node[lab, above]{differences} (cat_diff);
+        \draw[edge] (rq_cat) -- node[lab, below]{association} (cat_assoc);
+        \node[box, right=20mm of cat_diff] (cat_diff_tests) {$\chi^2$ / Fisher\\(independent)\\McNemar / Cochran's Q\\(paired)};
+        \node[box, right=20mm of cat_assoc] (cat_assoc_tests) {$\chi^2$ / Fisher\\(or logistic models)};
+        \draw[edge] (cat_diff) -- (cat_diff_tests);
+        \draw[edge] (cat_assoc) -- (cat_assoc_tests);
+
+        % Differences vs association (ordinal)
+        \node[box, right=20mm of rq_ord, yshift=10mm] (ord_diff) {Differences\\between groups};
+        \node[box, right=20mm of rq_ord, yshift=-10mm] (ord_assoc) {Association};
+        \draw[edge] (rq_ord) -- node[lab, above]{differences} (ord_diff);
+        \draw[edge] (rq_ord) -- node[lab, below]{association} (ord_assoc);
+        \node[box, right=20mm of ord_diff] (ord_diff_tests) {2 groups:\\Mann--Whitney (indep.)\\Wilcoxon (paired)\\$>2$ groups:\\Kruskal--Wallis\\Friedman (paired)};
+        \node[box, right=20mm of ord_assoc] (ord_assoc_tests) {Spearman};
+        \draw[edge] (ord_diff) -- (ord_diff_tests);
+        \draw[edge] (ord_assoc) -- (ord_assoc_tests);
+
+        % Differences vs association (continuous)
+        \node[box, right=20mm of rq_cont, yshift=10mm] (cont_diff) {Differences\\between groups};
+        \node[box, right=20mm of rq_cont, yshift=-10mm] (cont_assoc) {Association};
+        \draw[edge] (rq_cont) -- node[lab, above]{differences} (cont_diff);
+        \draw[edge] (rq_cont) -- node[lab, below]{association} (cont_assoc);
+        \node[box, right=20mm of cont_diff] (cont_diff_tests) {2 groups:\\t-test (indep./paired)\\(or rank-based alternative)\\$>2$ groups:\\ANOVA\\(or non-parametric alternative)};
+        \node[box, right=20mm of cont_assoc] (cont_assoc_tests) {Pearson\\(if assumptions)\\or Spearman};
+        \draw[edge] (cont_diff) -- (cont_diff_tests);
+        \draw[edge] (cont_assoc) -- (cont_assoc_tests);
     \end{tikzpicture}
     }%
-    \caption{Alternative decision tree (TikZ draft) for selecting a statistical test; included to allow easy editing and adaptation.}
+    \caption{Alternative decision tree (TikZ draft) for selecting a statistical test (left-to-right layout).}
     \label{fig:decisiontree-tikz}
-\end{figure}
+\end{sidewaysfigure}
 % 
 At the top level, it is necessary to select the correct type of data being analyzed:
 \begin{itemize}
