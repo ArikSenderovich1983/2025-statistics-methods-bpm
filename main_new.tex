@@ -19,6 +19,7 @@
 
 \def\exBPMNPetri{\textbf{Running Example A - Usefulness of BPMN vs Petri Nets}\\}
 \def\exAlg{\textbf{Running Example B - Algorithm performance}\\}
+\def\blocking{\textbf{Blocking}\\}
 
 \makeindex
 
@@ -210,7 +211,7 @@ Other techniques to quantify the effect size may look at the correlation coeffic
 In conclusion, reporting the effect size alongside the $p$-value ensures that the outcomes can be evaluated both from a \textit{statistical} and \textit{practical} significance: a result which is statistically significant but associated with a minimum effect size should be interpreted differently from one that is both significant and with a large effect size.
 
 
-\section{Hypothesis Testing Framework in BPM}
+\section{Hypothesis Testing in BPM: Workflow and Test Selection}
 \label{sec:method}
 
 It is possible to define a structured process in statistical testing, for BPM research as well as for other disciplines. Although the technical details may differ depending on the chosen tests, the general workflow is essentially the same.
@@ -277,13 +278,14 @@ Please note that categorical variables can also be studied in terms of associati
 
 The third and fourth layers are significant only when the problem being investigated is about differences between groups. Layer three is about the number of groups being considered (either 2, for example, expert/novices; or more than 2, for example, BPMN/Petri Nets/DECLARE). Layer four asks whether the data comes from independent groups or from a ``block.'' This decision will have an impact on the selection of the statistical test.
 
-\begin{important}{Blocking}
+\begin{svgraybox}
+\blocking
     Blocking is an experimental design technique that can be used to reduce the possible sources of variation and thus make the comparisons more precise. The idea is to group the individual data points into ``blocks'' that are internally similar. In this way, blocking can mitigate the effect of confounding variables.
 
     For example, if we want to compare the useful ratings of two modelling notations, we might want to avoid the experience level of the subjects to influence the results. To control for this, we can decide to ``block by expertise'': each block contains the ratings coming from subjects with a similar expertise level and, in such blocks, both notations are evaluated.
 
     A special case of blocking is with the ``paired'' design, where each subject forms its own block by contributing data under different conditions. The typical example of a paired design is with before/after studies, where a subject performs an exercise, then receives some training, and finally performs a new exercise.
-\end{important}
+\end{svgraybox}
 
 The last layer is about the assumptions on the data. Specifically, we have two options:
 \begin{itemize}
