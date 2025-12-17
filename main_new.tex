@@ -280,11 +280,13 @@ The third and fourth layers are significant only when the problem being investig
 
 \begin{svgraybox}
 \blocking
-    Blocking is an experimental design technique that can be used to reduce the possible sources of variation and thus make the comparisons more precise. The idea is to group the individual data points into ``blocks'' that are internally similar. In this way, blocking can mitigate the effect of confounding variables.
-
-    For example, if we want to compare the useful ratings of two modelling notations, we might want to avoid the experience level of the subjects to influence the results. To control for this, we can decide to ``block by expertise'': each block contains the ratings coming from subjects with a similar expertise level and, in such blocks, both notations are evaluated.
-
-    A special case of blocking is with the ``paired'' design, where each subject forms its own block by contributing data under different conditions. The typical example of a paired design is with before/after studies, where a subject performs an exercise, then receives some training, and finally performs a new exercise.
+    \textbf{Blocking} is a design choice where observations are grouped into ``blocks'' that are similar with respect to a nuisance factor, so that comparisons are made \emph{within} blocks rather than across heterogeneous subjects or cases.
+    \begin{itemize}
+        \item It reduces unwanted variability (noise) and can increase the precision of group comparisons.
+        \item It helps control confounding by ensuring that conditions are compared under comparable circumstances.
+        \item A common special case is a \textit{paired} (within-subject) design, where each participant forms their own block.
+    \end{itemize}
+    \noindent\textit{Example.} When comparing usefulness ratings of BPMN vs Petri Nets, each participant can rate both notations (paired design). This controls for individual differences (e.g., expertise) because the comparison is made within the same person.
 \end{svgraybox}
 
 The last layer is about the assumptions on the data. Specifically, we have two options:
