@@ -288,14 +288,14 @@ These considerations can be structured in the form of a decision tree that can b
         \def\xF{18.9}
         \def\xG{22.6}
 
-        % Row y-positions (top-to-bottom lanes)
-        \def\yCat{6.2}
-        \def\yOrd{2.0}
-        \def\yCont{-2.2}
-        \def\yCorr{-6.8}
+        % Row y-positions (top-to-bottom lanes). These are deliberately spaced
+        % far apart to avoid node overlap in the full-page sideways layout.
+        \def\yCat{16.0}
+        \def\yOrd{0.0}
+        \def\yCont{-16.0}
 
         % Root
-        \node[decision] (dtype) at (\xA,2.0) {Data\\type?};
+        \node[decision] (dtype) at (\xA,0.0) {Data\\type?};
 
         % Data type nodes
         \node[box] (cat)  at (\xB,\yCat) {Categorical\\(nominal/binary)};
@@ -311,32 +311,32 @@ These considerations can be structured in the form of a decision tree that can b
         \node[decision] (cat_q) at (\xC,\yCat) {Differences\\between\\groups?};
         \draw[edge] (cat) -- (cat_q);
 
-        \node[smallbox] (cat_g2) at (\xD,\yCat+1.6) {Grouping\\2 groups};
-        \node[smallbox] (cat_gk) at (\xD,\yCat-1.6) {Grouping\\$>2$ groups};
+        \node[smallbox] (cat_g2) at (\xD,\yCat+3.0) {Grouping\\2 groups};
+        \node[smallbox] (cat_gk) at (\xD,\yCat-3.0) {Grouping\\$>2$ groups};
         \draw[edge] (cat_q) -- node[lab, above]{yes} (cat_g2);
         \draw[edge] (cat_q) -- node[lab, below]{yes} (cat_gk);
 
-        \node[smallbox] (cat_g2_i) at (\xE,\yCat+2.3) {No blocks /\\Independent};
-        \node[smallbox] (cat_g2_p) at (\xE,\yCat+0.9) {Blocks\\(paired)};
-        \node[smallbox] (cat_gk_i) at (\xE,\yCat-0.9) {No blocks /\\Independent};
-        \node[smallbox] (cat_gk_p) at (\xE,\yCat-2.3) {Blocks\\(paired)};
+        \node[smallbox] (cat_g2_i) at (\xE,\yCat+4.6) {No blocks /\\Independent};
+        \node[smallbox] (cat_g2_p) at (\xE,\yCat+1.4) {Blocks\\(paired)};
+        \node[smallbox] (cat_gk_i) at (\xE,\yCat-1.4) {No blocks /\\Independent};
+        \node[smallbox] (cat_gk_p) at (\xE,\yCat-4.6) {Blocks\\(paired)};
         \draw[edge] (cat_g2) -- (cat_g2_i);
         \draw[edge] (cat_g2) -- (cat_g2_p);
         \draw[edge] (cat_gk) -- (cat_gk_i);
         \draw[edge] (cat_gk) -- (cat_gk_p);
 
-        \node[box] (cat_g2_i_t) at (\xG,\yCat+2.3) {$\chi^2$ test\\(or Fisher)};
-        \node[box] (cat_g2_p_t) at (\xG,\yCat+0.9) {McNemar\\(binary) /\\Stuart--Maxwell\\(multi-category)};
-        \node[box] (cat_gk_i_t) at (\xG,\yCat-0.9) {$\chi^2$ test\\(or Fisher)};
-        \node[box] (cat_gk_p_t) at (\xG,\yCat-2.3) {Cochran's Q\\(binary, $>2$)\\(or related\\marginal-homogeneity tests)};
+        \node[box] (cat_g2_i_t) at (\xG,\yCat+4.6) {$\chi^2$ test\\(or Fisher)};
+        \node[box] (cat_g2_p_t) at (\xG,\yCat+1.4) {McNemar\\(binary) /\\Stuart--Maxwell\\(multi-category)};
+        \node[box] (cat_gk_i_t) at (\xG,\yCat-1.4) {$\chi^2$ test\\(or Fisher)};
+        \node[box] (cat_gk_p_t) at (\xG,\yCat-4.6) {Cochran's Q\\(binary, $>2$)\\(or related\\marginal-homogeneity tests)};
         \draw[edge] (cat_g2_i) -- (cat_g2_i_t);
         \draw[edge] (cat_g2_p) -- (cat_g2_p_t);
         \draw[edge] (cat_gk_i) -- (cat_gk_i_t);
         \draw[edge] (cat_gk_p) -- (cat_gk_p_t);
 
         % Categorical association (optional side branch)
-        \node[decision] (cat_assoc_q) at (\xC,\yCat-4.2) {Association?};
-        \node[box] (cat_assoc_t) at (\xE,\yCat-4.2) {$\chi^2$ / Fisher\\(or logistic models)};
+        \node[decision] (cat_assoc_q) at (\xC,\yCat-8.2) {Association?};
+        \node[box] (cat_assoc_t) at (\xE,\yCat-8.2) {$\chi^2$ / Fisher\\(or logistic models)};
         \draw[edge] (cat) -- (cat_assoc_q);
         \draw[edge] (cat_assoc_q) -- (cat_assoc_t);
 
@@ -345,35 +345,35 @@ These considerations can be structured in the form of a decision tree that can b
         \node[decision] (ord_q) at (\xC,\yOrd) {Research\\question?};
         \draw[edge] (ord) -- (ord_q);
 
-        \node[smallbox] (ord_diff) at (\xD,\yOrd+1.4) {Differences\\between groups};
-        \node[smallbox] (ord_assoc) at (\xD,\yOrd-1.4) {Association};
+        \node[smallbox] (ord_diff) at (\xD,\yOrd+3.0) {Differences\\between groups};
+        \node[smallbox] (ord_assoc) at (\xD,\yOrd-3.0) {Association};
         \draw[edge] (ord_q) -- node[lab, above]{differences} (ord_diff);
         \draw[edge] (ord_q) -- node[lab, below]{association} (ord_assoc);
 
-        \node[smallbox] (ord_g2) at (\xE,\yOrd+2.2) {Grouping\\2 groups};
-        \node[smallbox] (ord_gk) at (\xE,\yOrd+0.6) {Grouping\\$>2$ groups};
+        \node[smallbox] (ord_g2) at (\xE,\yOrd+4.8) {Grouping\\2 groups};
+        \node[smallbox] (ord_gk) at (\xE,\yOrd+1.3) {Grouping\\$>2$ groups};
         \draw[edge] (ord_diff) -- (ord_g2);
         \draw[edge] (ord_diff) -- (ord_gk);
 
-        \node[smallbox] (ord_g2_i) at (\xF,\yOrd+2.9) {No blocks /\\Independent};
-        \node[smallbox] (ord_g2_p) at (\xF,\yOrd+1.5) {Blocks\\(paired)};
-        \node[smallbox] (ord_gk_i) at (\xF,\yOrd+1.0) {No blocks /\\Independent};
-        \node[smallbox] (ord_gk_p) at (\xF,\yOrd-0.4) {Blocks\\(paired)};
+        \node[smallbox] (ord_g2_i) at (\xF,\yOrd+6.4) {No blocks /\\Independent};
+        \node[smallbox] (ord_g2_p) at (\xF,\yOrd+3.2) {Blocks\\(paired)};
+        \node[smallbox] (ord_gk_i) at (\xF,\yOrd+2.0) {No blocks /\\Independent};
+        \node[smallbox] (ord_gk_p) at (\xF,\yOrd-1.2) {Blocks\\(paired)};
         \draw[edge] (ord_g2) -- (ord_g2_i);
         \draw[edge] (ord_g2) -- (ord_g2_p);
         \draw[edge] (ord_gk) -- (ord_gk_i);
         \draw[edge] (ord_gk) -- (ord_gk_p);
 
-        \node[box] (ord_g2_i_t) at (\xG,\yOrd+2.9) {Mann--Whitney U};
-        \node[box] (ord_g2_p_t) at (\xG,\yOrd+1.5) {Wilcoxon\\signed-rank};
-        \node[box] (ord_gk_i_t) at (\xG,\yOrd+1.0) {Kruskal--Wallis};
-        \node[box] (ord_gk_p_t) at (\xG,\yOrd-0.4) {Friedman};
+        \node[box] (ord_g2_i_t) at (\xG,\yOrd+6.4) {Mann--Whitney U};
+        \node[box] (ord_g2_p_t) at (\xG,\yOrd+3.2) {Wilcoxon\\signed-rank};
+        \node[box] (ord_gk_i_t) at (\xG,\yOrd+2.0) {Kruskal--Wallis};
+        \node[box] (ord_gk_p_t) at (\xG,\yOrd-1.2) {Friedman};
         \draw[edge] (ord_g2_i) -- (ord_g2_i_t);
         \draw[edge] (ord_g2_p) -- (ord_g2_p_t);
         \draw[edge] (ord_gk_i) -- (ord_gk_i_t);
         \draw[edge] (ord_gk_p) -- (ord_gk_p_t);
 
-        \node[box] (ord_assoc_t) at (\xG,\yOrd-1.4) {Spearman's\\correlation};
+        \node[box] (ord_assoc_t) at (\xG,\yOrd-3.0) {Spearman's\\correlation};
         \draw[edge] (ord_assoc) -- (ord_assoc_t);
 
         % -------------------------
@@ -381,36 +381,36 @@ These considerations can be structured in the form of a decision tree that can b
         \node[decision] (cont_q) at (\xC,\yCont) {Research\\question?};
         \draw[edge] (cont) -- (cont_q);
 
-        \node[smallbox] (cont_diff) at (\xD,\yCont+1.4) {Differences\\between groups};
-        \node[smallbox] (cont_rel)  at (\xD,\yCont-1.4) {Relationships\\between variables};
+        \node[smallbox] (cont_diff) at (\xD,\yCont+3.0) {Differences\\between groups};
+        \node[smallbox] (cont_rel)  at (\xD,\yCont-3.0) {Relationships\\between variables};
         \draw[edge] (cont_q) -- node[lab, above]{differences} (cont_diff);
         \draw[edge] (cont_q) -- node[lab, below]{relationship} (cont_rel);
 
         % Continuous differences: 2 vs >2 groups
-        \node[smallbox] (cont_g2) at (\xE,\yCont+2.2) {Grouping\\2 groups};
-        \node[smallbox] (cont_gk) at (\xE,\yCont+0.6) {Grouping\\$>2$ groups};
+        \node[smallbox] (cont_g2) at (\xE,\yCont+4.8) {Grouping\\2 groups};
+        \node[smallbox] (cont_gk) at (\xE,\yCont+1.3) {Grouping\\$>2$ groups};
         \draw[edge] (cont_diff) -- (cont_g2);
         \draw[edge] (cont_diff) -- (cont_gk);
 
         % Independence vs paired
-        \node[smallbox] (cont_g2_i) at (\xF,\yCont+2.9) {No blocks /\\Independent};
-        \node[smallbox] (cont_g2_p) at (\xF,\yCont+1.5) {Blocks\\(paired)};
-        \node[smallbox] (cont_gk_i) at (\xF,\yCont+1.0) {No blocks /\\Independent};
-        \node[smallbox] (cont_gk_p) at (\xF,\yCont-0.4) {Blocks\\(paired)};
+        \node[smallbox] (cont_g2_i) at (\xF,\yCont+6.4) {No blocks /\\Independent};
+        \node[smallbox] (cont_g2_p) at (\xF,\yCont+3.2) {Blocks\\(paired)};
+        \node[smallbox] (cont_gk_i) at (\xF,\yCont+2.0) {No blocks /\\Independent};
+        \node[smallbox] (cont_gk_p) at (\xF,\yCont-1.2) {Blocks\\(paired)};
         \draw[edge] (cont_g2) -- (cont_g2_i);
         \draw[edge] (cont_g2) -- (cont_g2_p);
         \draw[edge] (cont_gk) -- (cont_gk_i);
         \draw[edge] (cont_gk) -- (cont_gk_p);
 
         % Parametric vs non-parametric for continuous differences
-        \node[smallbox] (cont_g2_i_par) at (\xG+3.4,\yCont+3.3) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_g2_i_npar) at (\xG+3.4,\yCont+2.5) {Non-parametric};
-        \node[smallbox] (cont_g2_p_par) at (\xG+3.4,\yCont+1.9) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_g2_p_npar) at (\xG+3.4,\yCont+1.1) {Non-parametric};
-        \node[smallbox] (cont_gk_i_par) at (\xG+3.4,\yCont+0.6) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_gk_i_npar) at (\xG+3.4,\yCont-0.2) {Non-parametric};
-        \node[smallbox] (cont_gk_p_par) at (\xG+3.4,\yCont-0.6) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_gk_p_npar) at (\xG+3.4,\yCont-1.4) {Non-parametric};
+        \node[smallbox] (cont_g2_i_par)  at (\xG+3.4,\yCont+7.6) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_g2_i_npar) at (\xG+3.4,\yCont+6.0) {Non-parametric};
+        \node[smallbox] (cont_g2_p_par)  at (\xG+3.4,\yCont+4.4) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_g2_p_npar) at (\xG+3.4,\yCont+2.8) {Non-parametric};
+        \node[smallbox] (cont_gk_i_par)  at (\xG+3.4,\yCont+1.3) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_gk_i_npar) at (\xG+3.4,\yCont-0.3) {Non-parametric};
+        \node[smallbox] (cont_gk_p_par)  at (\xG+3.4,\yCont-1.9) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_gk_p_npar) at (\xG+3.4,\yCont-3.5) {Non-parametric};
         \draw[edge] (cont_g2_i) -- (cont_g2_i_par);
         \draw[edge] (cont_g2_i) -- (cont_g2_i_npar);
         \draw[edge] (cont_g2_p) -- (cont_g2_p_par);
@@ -421,14 +421,14 @@ These considerations can be structured in the form of a decision tree that can b
         \draw[edge] (cont_gk_p) -- (cont_gk_p_npar);
 
         % Continuous tests
-        \node[box] (t_ind_t)  at (\xG+7.3,\yCont+3.3) {Student's t-test};
-        \node[box] (mw_ind_t) at (\xG+7.3,\yCont+2.5) {Mann--Whitney U};
-        \node[box] (t_pair_t) at (\xG+7.3,\yCont+1.9) {Paired t-test};
-        \node[box] (w_pair_t) at (\xG+7.3,\yCont+1.1) {Wilcoxon\\signed-rank};
-        \node[box] (anova_t)  at (\xG+7.3,\yCont+0.6) {ANOVA};
-        \node[box] (kw_t)     at (\xG+7.3,\yCont-0.2) {Kruskal--Wallis};
-        \node[box] (rm_anova_t) at (\xG+7.3,\yCont-0.6) {Repeated-measures\\ANOVA};
-        \node[box] (fried_t)  at (\xG+7.3,\yCont-1.4) {Friedman};
+        \node[box] (t_ind_t)     at (\xG+7.3,\yCont+7.6) {Student's t-test};
+        \node[box] (mw_ind_t)    at (\xG+7.3,\yCont+6.0) {Mann--Whitney U};
+        \node[box] (t_pair_t)    at (\xG+7.3,\yCont+4.4) {Paired t-test};
+        \node[box] (w_pair_t)    at (\xG+7.3,\yCont+2.8) {Wilcoxon\\signed-rank};
+        \node[box] (anova_t)     at (\xG+7.3,\yCont+1.3) {ANOVA};
+        \node[box] (kw_t)        at (\xG+7.3,\yCont-0.3) {Kruskal--Wallis};
+        \node[box] (rm_anova_t)  at (\xG+7.3,\yCont-1.9) {Repeated-measures\\ANOVA};
+        \node[box] (fried_t)     at (\xG+7.3,\yCont-3.5) {Friedman};
         \draw[edge] (cont_g2_i_par) -- (t_ind_t);
         \draw[edge] (cont_g2_i_npar) -- (mw_ind_t);
         \draw[edge] (cont_g2_p_par) -- (t_pair_t);
@@ -439,14 +439,14 @@ These considerations can be structured in the form of a decision tree that can b
         \draw[edge] (cont_gk_p_npar) -- (fried_t);
 
         % Continuous relationships: correlation -> parametric vs non-parametric
-        \node[smallbox] (corr) at (\xE,\yCont-2.6) {Correlation};
+        \node[smallbox] (corr) at (\xE,\yCont-5.4) {Correlation};
         \draw[edge] (cont_rel) -- (corr);
-        \node[smallbox] (corr_par) at (\xF,\yCont-2.0) {Parametric\\(e.g., normality)};
-        \node[smallbox] (corr_npar) at (\xF,\yCont-3.2) {Non-parametric};
+        \node[smallbox] (corr_par) at (\xF,\yCont-4.6) {Parametric\\(e.g., normality)};
+        \node[smallbox] (corr_npar) at (\xF,\yCont-6.2) {Non-parametric};
         \draw[edge] (corr) -- (corr_par);
         \draw[edge] (corr) -- (corr_npar);
-        \node[box] (pear) at (\xG,\yCont-2.0) {Pearson's\\correlation};
-        \node[box] (spear) at (\xG,\yCont-3.2) {Spearman's\\correlation};
+        \node[box] (pear) at (\xG,\yCont-4.6) {Pearson's\\correlation};
+        \node[box] (spear) at (\xG,\yCont-6.2) {Spearman's\\correlation};
         \draw[edge] (corr_par) -- (pear);
         \draw[edge] (corr_npar) -- (spear);
     \end{tikzpicture}
