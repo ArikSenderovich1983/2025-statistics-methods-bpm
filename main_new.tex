@@ -8,9 +8,7 @@
 \usepackage{hyperref}
 \usepackage{todonotes}
 
-% (main_new) Alternative decision tree rendered directly in LaTeX.
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,matrix}
+% Full-page landscape figures (used for the decision tree PDF).
 \usepackage{rotating}
 
 \usepackage{newtxtext}
@@ -258,203 +256,11 @@ A key challenge in hypothesis testing is choosing the right test for the researc
 \end{itemize}
 These considerations can be structured in the form of a decision tree that can be used to drive the identification of the correct test. Such a decision tree is depicted in \autoref{fig:decisiontree}.
 % 
-\begin{figure}
-    \centering
-    \includegraphics[angle=90,width=.9\linewidth]{images/decision-tree.pdf}
-    \caption{A decision tree to drive the identification of the correct statistical test to use.}
-    \label{fig:decisiontree}
-\end{figure}
-%
-% Alternative rendering (TikZ). This is meant as an editable draft; choose between the PDF above and the TikZ version below.
-% The TikZ variant is laid out left-to-right and can use (almost) a full page.
 \begin{sidewaysfigure}
     \centering
-    % Use the full available rotated page width, and keep the structure closer to Fig.~\ref{fig:decisiontree}.
-    % Slightly under-fill the page width to avoid clipping on some TeX engines/layouts.
-    \resizebox{0.92\textheight}{!}{%
-    \begin{tikzpicture}[
-        font=\footnotesize,
-        box/.style={draw, rounded corners, align=center, inner sep=4pt, text width=3.4cm, fill=black!3},
-        decision/.style={draw, diamond, aspect=2.2, align=center, inner sep=2pt, text width=3.0cm, fill=white},
-        smallbox/.style={draw, rounded corners, align=center, inner sep=3pt, text width=2.9cm, fill=black!3},
-        edge/.style={-{Stealth[length=2mm]}, thick},
-        lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize}
-    ]
-        % Column x-positions (left-to-right)
-        % Tighter horizontal grid to keep the full diagram within the page.
-        \def\xA{0}
-        \def\xB{3.3}
-        \def\xC{6.6}
-        \def\xD{9.9}
-        \def\xE{13.2}
-        \def\xF{16.5}
-        \def\xG{19.8}
-
-        % Row y-positions (top-to-bottom lanes). These are deliberately spaced
-        % far apart to avoid node overlap in the full-page sideways layout.
-        \def\yCat{16.0}
-        \def\yOrd{0.0}
-        \def\yCont{-16.0}
-
-        % Root
-        \node[decision] (dtype) at (\xA,0.0) {Data\\type?};
-
-        % Data type nodes
-        \node[box] (cat)  at (\xB,\yCat) {Categorical\\(nominal/binary)};
-        \node[box] (ord)  at (\xB,\yOrd) {Ordinal\\(e.g., Likert)};
-        \node[box] (cont) at (\xB,\yCont) {Continuous\\(interval/ratio)};
-
-        \draw[edge] (dtype) -- node[lab, above]{categorical} (cat);
-        \draw[edge] (dtype) -- node[lab, above]{ordinal} (ord);
-        \draw[edge] (dtype) -- node[lab, below]{continuous} (cont);
-
-        % -------------------------
-        % Categorical: differences between groups (independent vs paired; 2 vs >2 groups)
-        \node[decision] (cat_q) at (\xC,\yCat) {Differences\\between\\groups?};
-        \draw[edge] (cat) -- (cat_q);
-
-        \node[smallbox] (cat_g2) at (\xD,\yCat+3.0) {Grouping\\2 groups};
-        \node[smallbox] (cat_gk) at (\xD,\yCat-3.0) {Grouping\\$>2$ groups};
-        \draw[edge] (cat_q) -- node[lab, above]{yes} (cat_g2);
-        \draw[edge] (cat_q) -- node[lab, below]{yes} (cat_gk);
-
-        \node[smallbox] (cat_g2_i) at (\xE,\yCat+4.6) {No blocks /\\Independent};
-        \node[smallbox] (cat_g2_p) at (\xE,\yCat+1.4) {Blocks\\(paired)};
-        \node[smallbox] (cat_gk_i) at (\xE,\yCat-1.4) {No blocks /\\Independent};
-        \node[smallbox] (cat_gk_p) at (\xE,\yCat-4.6) {Blocks\\(paired)};
-        \draw[edge] (cat_g2) -- (cat_g2_i);
-        \draw[edge] (cat_g2) -- (cat_g2_p);
-        \draw[edge] (cat_gk) -- (cat_gk_i);
-        \draw[edge] (cat_gk) -- (cat_gk_p);
-
-        \node[box] (cat_g2_i_t) at (\xG,\yCat+4.6) {$\chi^2$ test\\(or Fisher)};
-        \node[box] (cat_g2_p_t) at (\xG,\yCat+1.4) {McNemar\\(binary) /\\Stuart--Maxwell\\(multi-category)};
-        \node[box] (cat_gk_i_t) at (\xG,\yCat-1.4) {$\chi^2$ test\\(or Fisher)};
-        \node[box] (cat_gk_p_t) at (\xG,\yCat-4.6) {Cochran's Q\\(binary, $>2$)\\(or related\\marginal-homogeneity tests)};
-        \draw[edge] (cat_g2_i) -- (cat_g2_i_t);
-        \draw[edge] (cat_g2_p) -- (cat_g2_p_t);
-        \draw[edge] (cat_gk_i) -- (cat_gk_i_t);
-        \draw[edge] (cat_gk_p) -- (cat_gk_p_t);
-
-        % Categorical association (optional side branch)
-        \node[decision] (cat_assoc_q) at (\xC,\yCat-8.2) {Association?};
-        \node[box] (cat_assoc_t) at (\xE,\yCat-8.2) {$\chi^2$ / Fisher\\(or logistic models)};
-        \draw[edge] (cat) -- (cat_assoc_q);
-        \draw[edge] (cat_assoc_q) -- (cat_assoc_t);
-
-        % -------------------------
-        % Ordinal: differences vs association
-        \node[decision] (ord_q) at (\xC,\yOrd) {Research\\question?};
-        \draw[edge] (ord) -- (ord_q);
-
-        \node[smallbox] (ord_diff) at (\xD,\yOrd+3.0) {Differences\\between groups};
-        \node[smallbox] (ord_assoc) at (\xD,\yOrd-3.0) {Association};
-        \draw[edge] (ord_q) -- node[lab, above]{differences} (ord_diff);
-        \draw[edge] (ord_q) -- node[lab, below]{association} (ord_assoc);
-
-        \node[smallbox] (ord_g2) at (\xE,\yOrd+4.8) {Grouping\\2 groups};
-        \node[smallbox] (ord_gk) at (\xE,\yOrd+1.3) {Grouping\\$>2$ groups};
-        \draw[edge] (ord_diff) -- (ord_g2);
-        \draw[edge] (ord_diff) -- (ord_gk);
-
-        \node[smallbox] (ord_g2_i) at (\xF,\yOrd+6.4) {No blocks /\\Independent};
-        \node[smallbox] (ord_g2_p) at (\xF,\yOrd+3.2) {Blocks\\(paired)};
-        \node[smallbox] (ord_gk_i) at (\xF,\yOrd+2.0) {No blocks /\\Independent};
-        \node[smallbox] (ord_gk_p) at (\xF,\yOrd-1.2) {Blocks\\(paired)};
-        \draw[edge] (ord_g2) -- (ord_g2_i);
-        \draw[edge] (ord_g2) -- (ord_g2_p);
-        \draw[edge] (ord_gk) -- (ord_gk_i);
-        \draw[edge] (ord_gk) -- (ord_gk_p);
-
-        \node[box] (ord_g2_i_t) at (\xG,\yOrd+6.4) {Mann--Whitney U};
-        \node[box] (ord_g2_p_t) at (\xG,\yOrd+3.2) {Wilcoxon\\signed-rank};
-        \node[box] (ord_gk_i_t) at (\xG,\yOrd+2.0) {Kruskal--Wallis};
-        \node[box] (ord_gk_p_t) at (\xG,\yOrd-1.2) {Friedman};
-        \draw[edge] (ord_g2_i) -- (ord_g2_i_t);
-        \draw[edge] (ord_g2_p) -- (ord_g2_p_t);
-        \draw[edge] (ord_gk_i) -- (ord_gk_i_t);
-        \draw[edge] (ord_gk_p) -- (ord_gk_p_t);
-
-        \node[box] (ord_assoc_t) at (\xG,\yOrd-3.0) {Spearman's\\correlation};
-        \draw[edge] (ord_assoc) -- (ord_assoc_t);
-
-        % -------------------------
-        % Continuous: differences vs relationships (correlation), with parametric vs non-parametric
-        \node[decision] (cont_q) at (\xC,\yCont) {Research\\question?};
-        \draw[edge] (cont) -- (cont_q);
-
-        \node[smallbox] (cont_diff) at (\xD,\yCont+3.0) {Differences\\between groups};
-        \node[smallbox] (cont_rel)  at (\xD,\yCont-3.0) {Relationships\\between variables};
-        \draw[edge] (cont_q) -- node[lab, above]{differences} (cont_diff);
-        \draw[edge] (cont_q) -- node[lab, below]{relationship} (cont_rel);
-
-        % Continuous differences: 2 vs >2 groups
-        \node[smallbox] (cont_g2) at (\xE,\yCont+4.8) {Grouping\\2 groups};
-        \node[smallbox] (cont_gk) at (\xE,\yCont+1.3) {Grouping\\$>2$ groups};
-        \draw[edge] (cont_diff) -- (cont_g2);
-        \draw[edge] (cont_diff) -- (cont_gk);
-
-        % Independence vs paired
-        \node[smallbox] (cont_g2_i) at (\xF,\yCont+6.4) {No blocks /\\Independent};
-        \node[smallbox] (cont_g2_p) at (\xF,\yCont+3.2) {Blocks\\(paired)};
-        \node[smallbox] (cont_gk_i) at (\xF,\yCont+2.0) {No blocks /\\Independent};
-        \node[smallbox] (cont_gk_p) at (\xF,\yCont-1.2) {Blocks\\(paired)};
-        \draw[edge] (cont_g2) -- (cont_g2_i);
-        \draw[edge] (cont_g2) -- (cont_g2_p);
-        \draw[edge] (cont_gk) -- (cont_gk_i);
-        \draw[edge] (cont_gk) -- (cont_gk_p);
-
-        % Parametric vs non-parametric for continuous differences
-        \node[smallbox] (cont_g2_i_par)  at (\xG+3.0,\yCont+7.6) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_g2_i_npar) at (\xG+3.0,\yCont+6.0) {Non-parametric};
-        \node[smallbox] (cont_g2_p_par)  at (\xG+3.0,\yCont+4.4) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_g2_p_npar) at (\xG+3.0,\yCont+2.8) {Non-parametric};
-        \node[smallbox] (cont_gk_i_par)  at (\xG+3.0,\yCont+1.3) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_gk_i_npar) at (\xG+3.0,\yCont-0.3) {Non-parametric};
-        \node[smallbox] (cont_gk_p_par)  at (\xG+3.0,\yCont-1.9) {Parametric\\(e.g., normality)};
-        \node[smallbox] (cont_gk_p_npar) at (\xG+3.0,\yCont-3.5) {Non-parametric};
-        \draw[edge] (cont_g2_i) -- (cont_g2_i_par);
-        \draw[edge] (cont_g2_i) -- (cont_g2_i_npar);
-        \draw[edge] (cont_g2_p) -- (cont_g2_p_par);
-        \draw[edge] (cont_g2_p) -- (cont_g2_p_npar);
-        \draw[edge] (cont_gk_i) -- (cont_gk_i_par);
-        \draw[edge] (cont_gk_i) -- (cont_gk_i_npar);
-        \draw[edge] (cont_gk_p) -- (cont_gk_p_par);
-        \draw[edge] (cont_gk_p) -- (cont_gk_p_npar);
-
-        % Continuous tests
-        \node[box] (t_ind_t)     at (\xG+6.4,\yCont+7.6) {Student's t-test};
-        \node[box] (mw_ind_t)    at (\xG+6.4,\yCont+6.0) {Mann--Whitney U};
-        \node[box] (t_pair_t)    at (\xG+6.4,\yCont+4.4) {Paired t-test};
-        \node[box] (w_pair_t)    at (\xG+6.4,\yCont+2.8) {Wilcoxon\\signed-rank};
-        \node[box] (anova_t)     at (\xG+6.4,\yCont+1.3) {ANOVA};
-        \node[box] (kw_t)        at (\xG+6.4,\yCont-0.3) {Kruskal--Wallis};
-        \node[box] (rm_anova_t)  at (\xG+6.4,\yCont-1.9) {Repeated-measures\\ANOVA};
-        \node[box] (fried_t)     at (\xG+6.4,\yCont-3.5) {Friedman};
-        \draw[edge] (cont_g2_i_par) -- (t_ind_t);
-        \draw[edge] (cont_g2_i_npar) -- (mw_ind_t);
-        \draw[edge] (cont_g2_p_par) -- (t_pair_t);
-        \draw[edge] (cont_g2_p_npar) -- (w_pair_t);
-        \draw[edge] (cont_gk_i_par) -- (anova_t);
-        \draw[edge] (cont_gk_i_npar) -- (kw_t);
-        \draw[edge] (cont_gk_p_par) -- (rm_anova_t);
-        \draw[edge] (cont_gk_p_npar) -- (fried_t);
-
-        % Continuous relationships: correlation -> parametric vs non-parametric
-        \node[smallbox] (corr) at (\xE,\yCont-5.4) {Correlation};
-        \draw[edge] (cont_rel) -- (corr);
-        \node[smallbox] (corr_par) at (\xF,\yCont-4.6) {Parametric\\(e.g., normality)};
-        \node[smallbox] (corr_npar) at (\xF,\yCont-6.2) {Non-parametric};
-        \draw[edge] (corr) -- (corr_par);
-        \draw[edge] (corr) -- (corr_npar);
-        \node[box] (pear) at (\xG,\yCont-4.6) {Pearson's\\correlation};
-        \node[box] (spear) at (\xG,\yCont-6.2) {Spearman's\\correlation};
-        \draw[edge] (corr_par) -- (pear);
-        \draw[edge] (corr_npar) -- (spear);
-    \end{tikzpicture}
-    }%
-    \caption{Alternative decision tree (TikZ draft) for selecting a statistical test (left-to-right layout; richer test set and intermediate decisions).}
-    \label{fig:decisiontree-tikz}
+    \includegraphics[width=\textheight]{images/decision-tree.pdf}
+    \caption{Decision tree (left-to-right) to guide the selection of a statistical test.}
+    \label{fig:decisiontree}
 \end{sidewaysfigure}
 % 
 At the top level, it is necessary to select the correct type of data being analyzed:
@@ -593,29 +399,24 @@ This format of reporting ensures that the statistical procedure is transparent w
 
 Sound statistical testing is essential for credible BPM research, however there are typical pitfalls that often recur in practice. In this section, we highlight some of the most common problems.
 
-\paragraph{Over-reliance on $p$-values.}
-A common mistake is to assume that statistical significance corresponds to scientific importance: a $p$-value below $\alpha$ is sometimes treated as a sign of quality of the results. However, it only indicates that the observed data is unlikely under the assumption of $H_0$. It does not measure the size or the importance of the effect. Therefore, researchers should avoid thinking only in terms of significant/not significant and focus a bit more on the actual interpretation of the $p$-value.
+\begin{description}
+\item[\textbf{Over-reliance on $p$-values.}]
+A common mistake is to assume that statistical significance corresponds to scientific importance: a $p$-value below $\alpha$ is sometimes treated as a sign of quality of the results. However, it only indicates that the observed data are unlikely under the assumption of $H_0$ (given the test assumptions). It does not measure the size or the importance of the effect. Therefore, researchers should avoid thinking only in terms of significant/not significant and focus on interpreting results in context.
 
+\item[\textbf{Ignoring effect size.}]
+Related to the previous point is the error of not computing and discussing the effect size. Without it, it is impossible to judge whether a statistically significant difference is practically relevant or not. For this reason, the effect size should always accompany $p$-values.
 
-\paragraph{Ignoring effect size.}
-Related to the previous point, is the error of not computing and discussing the effect size. Without it, it is impossible to judge whether a statistically significant difference is practically relevant or not. For this reason, the effect size should always accompany $p$-values.
-
-\paragraph{Misusing tests.}
+\item[\textbf{Misusing tests.}]
 Statistical tests must match the data type, the study design, and the assumptions. For example, if the same experts rate both BPMN and Petri Nets, a paired test should be used. Misusing tests can lead to errors and invalid conclusions and interpretations.
 
-\paragraph{Multiple comparisons (multiple testing).}
+\item[\textbf{Multiple comparisons (multiple testing).}]
 Many BPM studies involve \emph{many} statistical tests, for instance when comparing multiple algorithms, metrics, configurations, datasets, or survey items. If each test is assessed at $\alpha=0.05$, then even when all null hypotheses are true, some ``significant'' results are expected to occur by chance. The more tests are performed, the higher the probability of false positives among the reported findings.
 
-This does not mean that multiple comparisons are always wrong; rather, it means that authors should be explicit about what family of tests they are interpreting together and what error notion they want to control. Common approaches include:
-\begin{itemize}
-    \item \textit{Pre-specify a small number of primary hypotheses/outcomes} and treat other analyses as exploratory.
-    \item \textit{Adjust $p$-values or decision thresholds} when testing a family of hypotheses, e.g., using Holm's method for controlling the family-wise error rate~\cite{Holm1979} or using the Benjamini--Hochberg procedure to control the false discovery rate~\cite{BenjaminiHochberg1995}.
-    \item \textit{Report transparently}: state how many tests were run, which comparisons were planned, and avoid selectively reporting only significant results.
-\end{itemize}
-In short, when a result is one of many comparisons, its interpretation should reflect that context.
+This does not mean that multiple comparisons are always wrong; rather, authors should be explicit about what family of tests they are interpreting together and what error notion they want to control. Common approaches include: (i) pre-specifying a small number of primary hypotheses/outcomes; (ii) adjusting for multiple testing, e.g., via Holm's method (family-wise error rate)~\cite{Holm1979} or Benjamini--Hochberg (false discovery rate)~\cite{BenjaminiHochberg1995}; and (iii) transparent reporting of how many tests were run and which comparisons were planned.
 
-\paragraph{Spurious correlations.}
+\item[\textbf{Spurious correlations.}]
 Correlations can reveal meaningful relationships, but they can also be misleading. A statistically significant correlation does not imply causation, and apparent relationships may arise from confounding variables or simple coincidence, without a proper hypothesis formulated before correlations are computed. This phenomenon, also called data dredging or $p$-hacking, could represent a serious violation of academic integrity.\footnote{Tyler Vigen has compiled a fascinating collection of spurious correlations, with an explanation of the results and corresponding data sources. This website is available at \url{https://tylervigen.com/spurious-correlations}.}
+\end{description}
 
 
 \section{Conclusion}
