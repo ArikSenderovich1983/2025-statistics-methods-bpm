@@ -8,8 +8,7 @@
 \usepackage{hyperref}
 \usepackage{todonotes}
 
-% Full-page landscape figures (used for the decision tree PDF).
-\usepackage{rotating}
+% (no TikZ in this draft; we use the original PDF for the decision tree figure)
 
 \usepackage{newtxtext}
 \usepackage{newtxmath}
@@ -256,12 +255,12 @@ A key challenge in hypothesis testing is choosing the right test for the researc
 \end{itemize}
 These considerations can be structured in the form of a decision tree that can be used to drive the identification of the correct test. Such a decision tree is depicted in \autoref{fig:decisiontree}.
 % 
-\begin{sidewaysfigure}
+\begin{figure}
     \centering
-    \includegraphics[width=\textheight]{images/decision-tree.pdf}
-    \caption{Decision tree (left-to-right) to guide the selection of a statistical test.}
+    \includegraphics[angle=90,width=.9\linewidth]{images/decision-tree.pdf}
+    \caption{A decision tree to drive the identification of the correct statistical test to use.}
     \label{fig:decisiontree}
-\end{sidewaysfigure}
+\end{figure}
 % 
 At the top level, it is necessary to select the correct type of data being analyzed:
 \begin{itemize}
@@ -307,7 +306,7 @@ So far we treated the statistical tests as ``black boxes'' and we just discussed
 \subsection{Some Common Tests}
 \label{sec:common-tests}
 
-Next, we provide a brief overview of some of the most common statistical tests that can be used in BPM research. While a detailed mathematical formulation of the tests along with a discussion of their properties can be found in many statistical textbooks (see, for instance,~\cite{todo}), we here focus on their general idea and intuition. 
+Next, we provide a brief overview of some of the most common statistical tests that can be used in BPM research. While a detailed mathematical formulation of the tests along with a discussion of their properties can be found in many statistical textbooks (see, for instance,~\cite{MontgomeryRunger2014}), we here focus on their general idea and intuition. 
 
 \begin{description}
 \item[\textbf{Chi-square test and Fisher's exact test.}]
