@@ -19,7 +19,6 @@
 
 \def\exBPMNPetri{\textbf{Running Example A - Usefulness of BPMN vs Petri Nets}\\}
 \def\exAlg{\textbf{Running Example B - Algorithm performance}\\}
-\def\blocking{\textbf{Blocking}\\}
 
 \makeindex
 
@@ -273,25 +272,23 @@ In the second layer, it is necessary to discuss the type of problem being invest
 \begin{itemize}
     \item Differences between groups: here, the goal is to determine whether our variable is expressing differences among groups (e.g., rate of a notation for experts/novices or for BPMN/Petri Nets).
     \item Relationships between variables: in this case, the goal is to understand whether we observe two variables expressing the same behavior (e.g., execution time of an algorithm w.r.t. the number of attributes of the corresponding log).
-\end{itemize}
-Please note that categorical variables can also be studied in terms of association (e.g., contingency tables), for which tests such as $\chi^2$ or Fisher's exact test are commonly used.
+\end{itemize} Note that categorical variables can also be studied in terms of association (e.g., contingency tables), for which tests such as $\chi^2$ or Fisher's exact test are commonly used.
 
 The third and fourth layers are significant only when the problem being investigated is about differences between groups. Layer three is about the number of groups being considered (either 2, for example, expert/novices; or more than 2, for example, BPMN/Petri Nets/DECLARE). Layer four asks whether the data comes from independent groups or from a ``block.'' This decision will have an impact on the selection of the statistical test.
 
-\begin{svgraybox}
-\blocking
-    \textbf{Blocking} is a design choice where observations are grouped into ``blocks'' that are similar with respect to a nuisance factor, so that comparisons are made \emph{within} blocks rather than across heterogeneous subjects or cases.
+%\begin{svgraybox}
+    \textbf{Blocking.} Blocking is a design choice where observations are grouped into ``blocks'' that are similar with respect to a nuisance factor, so that comparisons are made \emph{within} blocks rather than across heterogeneous subjects or cases.
     \begin{itemize}
         \item It reduces unwanted variability (noise) and can increase the precision of group comparisons.
         \item It helps control confounding by ensuring that conditions are compared under comparable circumstances.
         \item A common special case is a \textit{paired} (within-subject) design, where each participant forms their own block.
     \end{itemize}
     \noindent\textit{Example.} When comparing usefulness ratings of BPMN vs Petri Nets, each participant can rate both notations (paired design). This controls for individual differences (e.g., expertise) because the comparison is made within the same person.
-\end{svgraybox}
+%\end{svgraybox}
 
 The last layer is about the assumptions on the data. Specifically, we have two options:
 \begin{itemize}
-    \item Parametric setting: in this case, data is assumed to come from a population following a dedicated distribution that is characterized by a fixed set of parameters (e.g., a Normal distribution described by its mean and variance). Moreover, one assumes homogeneity of variance, which means that the data in each group has the same variance, and that data in each group is randomly sampled from the population. There are tests \todo{shall we discuss tests to check for the parametric requirement?} that can be used to confirm that the data at hand is meeting the parametric requirement.
+    \item Parametric setting: in this case, data is assumed to come from a population following a dedicated distribution that is characterized by a fixed set of parameters (e.g., a Normal distribution described by its mean and variance). Moreover, one assumes homogeneity of variance, which means that the data in each group has the same variance, and that data in each group is randomly sampled from the population. There are tests that can be used to confirm that the data at hand is meeting the parametric requirement.
 %    \item Parametric setting: in this case, data is assumed to come from a population following a Normal distribution, the data in each group have the same variance, and data in each group is randomly sampled from the population. There are tests that can be used to confirm that the data at hand is meeting the parametric requirement.
     \item Non-parametric setting: this is the more general case, and can be safely applied regardless of the assumptions. The statistical tests, in this case, are less powerful but always applicable, so they represent a ``safer'' option.
 \end{itemize}
@@ -304,7 +301,7 @@ Considering our example:
     The data is ordinal (Likert scale), and the question is about differences between 2 conditions (BPMN vs Petri Nets). Since each subject evaluated both notations, the study is paired, and we do not make parametric assumptions about the underlying distribution. Given these aspects, we can apply a non-parametric paired test such as the Wilcoxon signed-rank test.
 \end{svgraybox}
 
-So far we treated the statistical tests as ``black boxes'' and we just discussed how to select the correct one. In the following section, we will discuss the most common tests.
+So far we treated the statistical tests as ``black boxes'' and we only discussed how to select the correct one. In the following section, we present the most common tests.
 
 
 \subsection{Some Common Tests}
