@@ -10,7 +10,7 @@
 
 % (main_new) Alternative decision tree rendered directly in LaTeX.
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,matrix}
 \usepackage{rotating}
 
 \usepackage{newtxtext}
@@ -269,67 +269,189 @@ These considerations can be structured in the form of a decision tree that can b
 % The TikZ variant is laid out left-to-right and can use (almost) a full page.
 \begin{sidewaysfigure}
     \centering
-    \resizebox{0.95\textheight}{!}{%
+    % Use the full available rotated page width, and keep the structure closer to Fig.~\ref{fig:decisiontree}.
+    \resizebox{\textheight}{!}{%
     \begin{tikzpicture}[
         font=\footnotesize,
-        box/.style={draw, rounded corners, align=center, inner sep=5pt, text width=3.4cm, fill=black!3},
+        box/.style={draw, rounded corners, align=center, inner sep=4pt, text width=3.4cm, fill=black!3},
         decision/.style={draw, diamond, aspect=2.2, align=center, inner sep=2pt, text width=3.0cm, fill=white},
+        smallbox/.style={draw, rounded corners, align=center, inner sep=3pt, text width=2.9cm, fill=black!3},
         edge/.style={-{Stealth[length=2mm]}, thick},
-        lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize},
-        node distance=10mm and 14mm
+        lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize}
     ]
-        % Left-to-right, three lanes (categorical / ordinal / continuous)
-        \node[decision] (dtype) {Data type?};
+        % Column x-positions (left-to-right)
+        \def\xA{0}
+        \def\xB{3.8}
+        \def\xC{7.6}
+        \def\xD{11.4}
+        \def\xE{15.2}
+        \def\xF{18.9}
+        \def\xG{22.6}
 
-        \node[box, right=20mm of dtype, yshift=18mm] (cat) {Categorical\\(nominal/binary)};
-        \node[box, right=20mm of dtype] (ord) {Ordinal\\(e.g., Likert)};
-        \node[box, right=20mm of dtype, yshift=-18mm] (cont) {Continuous\\(interval/ratio)};
+        % Row y-positions (top-to-bottom lanes)
+        \def\yCat{6.2}
+        \def\yOrd{2.0}
+        \def\yCont{-2.2}
+        \def\yCorr{-6.8}
+
+        % Root
+        \node[decision] (dtype) at (\xA,2.0) {Data\\type?};
+
+        % Data type nodes
+        \node[box] (cat)  at (\xB,\yCat) {Categorical\\(nominal/binary)};
+        \node[box] (ord)  at (\xB,\yOrd) {Ordinal\\(e.g., Likert)};
+        \node[box] (cont) at (\xB,\yCont) {Continuous\\(interval/ratio)};
 
         \draw[edge] (dtype) -- node[lab, above]{categorical} (cat);
         \draw[edge] (dtype) -- node[lab, above]{ordinal} (ord);
         \draw[edge] (dtype) -- node[lab, below]{continuous} (cont);
 
-        % Research question nodes
-        \node[decision, right=20mm of cat] (rq_cat) {Research\\question?};
-        \node[decision, right=20mm of ord] (rq_ord) {Research\\question?};
-        \node[decision, right=20mm of cont] (rq_cont) {Research\\question?};
+        % -------------------------
+        % Categorical: differences between groups (independent vs paired; 2 vs >2 groups)
+        \node[decision] (cat_q) at (\xC,\yCat) {Differences\\between\\groups?};
+        \draw[edge] (cat) -- (cat_q);
 
-        \draw[edge] (cat) -- (rq_cat);
-        \draw[edge] (ord) -- (rq_ord);
-        \draw[edge] (cont) -- (rq_cont);
+        \node[smallbox] (cat_g2) at (\xD,\yCat+1.6) {Grouping\\2 groups};
+        \node[smallbox] (cat_gk) at (\xD,\yCat-1.6) {Grouping\\$>2$ groups};
+        \draw[edge] (cat_q) -- node[lab, above]{yes} (cat_g2);
+        \draw[edge] (cat_q) -- node[lab, below]{yes} (cat_gk);
 
-        % Differences vs association (categorical)
-        \node[box, right=20mm of rq_cat, yshift=10mm] (cat_diff) {Differences\\between groups};
-        \node[box, right=20mm of rq_cat, yshift=-10mm] (cat_assoc) {Association};
-        \draw[edge] (rq_cat) -- node[lab, above]{differences} (cat_diff);
-        \draw[edge] (rq_cat) -- node[lab, below]{association} (cat_assoc);
-        \node[box, right=20mm of cat_diff] (cat_diff_tests) {$\chi^2$ / Fisher\\(independent)\\McNemar / Cochran's Q\\(paired)};
-        \node[box, right=20mm of cat_assoc] (cat_assoc_tests) {$\chi^2$ / Fisher\\(or logistic models)};
-        \draw[edge] (cat_diff) -- (cat_diff_tests);
-        \draw[edge] (cat_assoc) -- (cat_assoc_tests);
+        \node[smallbox] (cat_g2_i) at (\xE,\yCat+2.3) {No blocks /\\Independent};
+        \node[smallbox] (cat_g2_p) at (\xE,\yCat+0.9) {Blocks\\(paired)};
+        \node[smallbox] (cat_gk_i) at (\xE,\yCat-0.9) {No blocks /\\Independent};
+        \node[smallbox] (cat_gk_p) at (\xE,\yCat-2.3) {Blocks\\(paired)};
+        \draw[edge] (cat_g2) -- (cat_g2_i);
+        \draw[edge] (cat_g2) -- (cat_g2_p);
+        \draw[edge] (cat_gk) -- (cat_gk_i);
+        \draw[edge] (cat_gk) -- (cat_gk_p);
 
-        % Differences vs association (ordinal)
-        \node[box, right=20mm of rq_ord, yshift=10mm] (ord_diff) {Differences\\between groups};
-        \node[box, right=20mm of rq_ord, yshift=-10mm] (ord_assoc) {Association};
-        \draw[edge] (rq_ord) -- node[lab, above]{differences} (ord_diff);
-        \draw[edge] (rq_ord) -- node[lab, below]{association} (ord_assoc);
-        \node[box, right=20mm of ord_diff] (ord_diff_tests) {2 groups:\\Mann--Whitney (indep.)\\Wilcoxon (paired)\\$>2$ groups:\\Kruskal--Wallis\\Friedman (paired)};
-        \node[box, right=20mm of ord_assoc] (ord_assoc_tests) {Spearman};
-        \draw[edge] (ord_diff) -- (ord_diff_tests);
-        \draw[edge] (ord_assoc) -- (ord_assoc_tests);
+        \node[box] (cat_g2_i_t) at (\xG,\yCat+2.3) {$\chi^2$ test\\(or Fisher)};
+        \node[box] (cat_g2_p_t) at (\xG,\yCat+0.9) {McNemar\\(binary) /\\Stuart--Maxwell\\(multi-category)};
+        \node[box] (cat_gk_i_t) at (\xG,\yCat-0.9) {$\chi^2$ test\\(or Fisher)};
+        \node[box] (cat_gk_p_t) at (\xG,\yCat-2.3) {Cochran's Q\\(binary, $>2$)\\(or related\\marginal-homogeneity tests)};
+        \draw[edge] (cat_g2_i) -- (cat_g2_i_t);
+        \draw[edge] (cat_g2_p) -- (cat_g2_p_t);
+        \draw[edge] (cat_gk_i) -- (cat_gk_i_t);
+        \draw[edge] (cat_gk_p) -- (cat_gk_p_t);
 
-        % Differences vs association (continuous)
-        \node[box, right=20mm of rq_cont, yshift=10mm] (cont_diff) {Differences\\between groups};
-        \node[box, right=20mm of rq_cont, yshift=-10mm] (cont_assoc) {Association};
-        \draw[edge] (rq_cont) -- node[lab, above]{differences} (cont_diff);
-        \draw[edge] (rq_cont) -- node[lab, below]{association} (cont_assoc);
-        \node[box, right=20mm of cont_diff] (cont_diff_tests) {2 groups:\\t-test (indep./paired)\\(or rank-based alternative)\\$>2$ groups:\\ANOVA\\(or non-parametric alternative)};
-        \node[box, right=20mm of cont_assoc] (cont_assoc_tests) {Pearson\\(if assumptions)\\or Spearman};
-        \draw[edge] (cont_diff) -- (cont_diff_tests);
-        \draw[edge] (cont_assoc) -- (cont_assoc_tests);
+        % Categorical association (optional side branch)
+        \node[decision] (cat_assoc_q) at (\xC,\yCat-4.2) {Association?};
+        \node[box] (cat_assoc_t) at (\xE,\yCat-4.2) {$\chi^2$ / Fisher\\(or logistic models)};
+        \draw[edge] (cat) -- (cat_assoc_q);
+        \draw[edge] (cat_assoc_q) -- (cat_assoc_t);
+
+        % -------------------------
+        % Ordinal: differences vs association
+        \node[decision] (ord_q) at (\xC,\yOrd) {Research\\question?};
+        \draw[edge] (ord) -- (ord_q);
+
+        \node[smallbox] (ord_diff) at (\xD,\yOrd+1.4) {Differences\\between groups};
+        \node[smallbox] (ord_assoc) at (\xD,\yOrd-1.4) {Association};
+        \draw[edge] (ord_q) -- node[lab, above]{differences} (ord_diff);
+        \draw[edge] (ord_q) -- node[lab, below]{association} (ord_assoc);
+
+        \node[smallbox] (ord_g2) at (\xE,\yOrd+2.2) {Grouping\\2 groups};
+        \node[smallbox] (ord_gk) at (\xE,\yOrd+0.6) {Grouping\\$>2$ groups};
+        \draw[edge] (ord_diff) -- (ord_g2);
+        \draw[edge] (ord_diff) -- (ord_gk);
+
+        \node[smallbox] (ord_g2_i) at (\xF,\yOrd+2.9) {No blocks /\\Independent};
+        \node[smallbox] (ord_g2_p) at (\xF,\yOrd+1.5) {Blocks\\(paired)};
+        \node[smallbox] (ord_gk_i) at (\xF,\yOrd+1.0) {No blocks /\\Independent};
+        \node[smallbox] (ord_gk_p) at (\xF,\yOrd-0.4) {Blocks\\(paired)};
+        \draw[edge] (ord_g2) -- (ord_g2_i);
+        \draw[edge] (ord_g2) -- (ord_g2_p);
+        \draw[edge] (ord_gk) -- (ord_gk_i);
+        \draw[edge] (ord_gk) -- (ord_gk_p);
+
+        \node[box] (ord_g2_i_t) at (\xG,\yOrd+2.9) {Mann--Whitney U};
+        \node[box] (ord_g2_p_t) at (\xG,\yOrd+1.5) {Wilcoxon\\signed-rank};
+        \node[box] (ord_gk_i_t) at (\xG,\yOrd+1.0) {Kruskal--Wallis};
+        \node[box] (ord_gk_p_t) at (\xG,\yOrd-0.4) {Friedman};
+        \draw[edge] (ord_g2_i) -- (ord_g2_i_t);
+        \draw[edge] (ord_g2_p) -- (ord_g2_p_t);
+        \draw[edge] (ord_gk_i) -- (ord_gk_i_t);
+        \draw[edge] (ord_gk_p) -- (ord_gk_p_t);
+
+        \node[box] (ord_assoc_t) at (\xG,\yOrd-1.4) {Spearman's\\correlation};
+        \draw[edge] (ord_assoc) -- (ord_assoc_t);
+
+        % -------------------------
+        % Continuous: differences vs relationships (correlation), with parametric vs non-parametric
+        \node[decision] (cont_q) at (\xC,\yCont) {Research\\question?};
+        \draw[edge] (cont) -- (cont_q);
+
+        \node[smallbox] (cont_diff) at (\xD,\yCont+1.4) {Differences\\between groups};
+        \node[smallbox] (cont_rel)  at (\xD,\yCont-1.4) {Relationships\\between variables};
+        \draw[edge] (cont_q) -- node[lab, above]{differences} (cont_diff);
+        \draw[edge] (cont_q) -- node[lab, below]{relationship} (cont_rel);
+
+        % Continuous differences: 2 vs >2 groups
+        \node[smallbox] (cont_g2) at (\xE,\yCont+2.2) {Grouping\\2 groups};
+        \node[smallbox] (cont_gk) at (\xE,\yCont+0.6) {Grouping\\$>2$ groups};
+        \draw[edge] (cont_diff) -- (cont_g2);
+        \draw[edge] (cont_diff) -- (cont_gk);
+
+        % Independence vs paired
+        \node[smallbox] (cont_g2_i) at (\xF,\yCont+2.9) {No blocks /\\Independent};
+        \node[smallbox] (cont_g2_p) at (\xF,\yCont+1.5) {Blocks\\(paired)};
+        \node[smallbox] (cont_gk_i) at (\xF,\yCont+1.0) {No blocks /\\Independent};
+        \node[smallbox] (cont_gk_p) at (\xF,\yCont-0.4) {Blocks\\(paired)};
+        \draw[edge] (cont_g2) -- (cont_g2_i);
+        \draw[edge] (cont_g2) -- (cont_g2_p);
+        \draw[edge] (cont_gk) -- (cont_gk_i);
+        \draw[edge] (cont_gk) -- (cont_gk_p);
+
+        % Parametric vs non-parametric for continuous differences
+        \node[smallbox] (cont_g2_i_par) at (\xG+3.4,\yCont+3.3) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_g2_i_npar) at (\xG+3.4,\yCont+2.5) {Non-parametric};
+        \node[smallbox] (cont_g2_p_par) at (\xG+3.4,\yCont+1.9) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_g2_p_npar) at (\xG+3.4,\yCont+1.1) {Non-parametric};
+        \node[smallbox] (cont_gk_i_par) at (\xG+3.4,\yCont+0.6) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_gk_i_npar) at (\xG+3.4,\yCont-0.2) {Non-parametric};
+        \node[smallbox] (cont_gk_p_par) at (\xG+3.4,\yCont-0.6) {Parametric\\(e.g., normality)};
+        \node[smallbox] (cont_gk_p_npar) at (\xG+3.4,\yCont-1.4) {Non-parametric};
+        \draw[edge] (cont_g2_i) -- (cont_g2_i_par);
+        \draw[edge] (cont_g2_i) -- (cont_g2_i_npar);
+        \draw[edge] (cont_g2_p) -- (cont_g2_p_par);
+        \draw[edge] (cont_g2_p) -- (cont_g2_p_npar);
+        \draw[edge] (cont_gk_i) -- (cont_gk_i_par);
+        \draw[edge] (cont_gk_i) -- (cont_gk_i_npar);
+        \draw[edge] (cont_gk_p) -- (cont_gk_p_par);
+        \draw[edge] (cont_gk_p) -- (cont_gk_p_npar);
+
+        % Continuous tests
+        \node[box] (t_ind_t)  at (\xG+7.3,\yCont+3.3) {Student's t-test};
+        \node[box] (mw_ind_t) at (\xG+7.3,\yCont+2.5) {Mann--Whitney U};
+        \node[box] (t_pair_t) at (\xG+7.3,\yCont+1.9) {Paired t-test};
+        \node[box] (w_pair_t) at (\xG+7.3,\yCont+1.1) {Wilcoxon\\signed-rank};
+        \node[box] (anova_t)  at (\xG+7.3,\yCont+0.6) {ANOVA};
+        \node[box] (kw_t)     at (\xG+7.3,\yCont-0.2) {Kruskal--Wallis};
+        \node[box] (rm_anova_t) at (\xG+7.3,\yCont-0.6) {Repeated-measures\\ANOVA};
+        \node[box] (fried_t)  at (\xG+7.3,\yCont-1.4) {Friedman};
+        \draw[edge] (cont_g2_i_par) -- (t_ind_t);
+        \draw[edge] (cont_g2_i_npar) -- (mw_ind_t);
+        \draw[edge] (cont_g2_p_par) -- (t_pair_t);
+        \draw[edge] (cont_g2_p_npar) -- (w_pair_t);
+        \draw[edge] (cont_gk_i_par) -- (anova_t);
+        \draw[edge] (cont_gk_i_npar) -- (kw_t);
+        \draw[edge] (cont_gk_p_par) -- (rm_anova_t);
+        \draw[edge] (cont_gk_p_npar) -- (fried_t);
+
+        % Continuous relationships: correlation -> parametric vs non-parametric
+        \node[smallbox] (corr) at (\xE,\yCont-2.6) {Correlation};
+        \draw[edge] (cont_rel) -- (corr);
+        \node[smallbox] (corr_par) at (\xF,\yCont-2.0) {Parametric\\(e.g., normality)};
+        \node[smallbox] (corr_npar) at (\xF,\yCont-3.2) {Non-parametric};
+        \draw[edge] (corr) -- (corr_par);
+        \draw[edge] (corr) -- (corr_npar);
+        \node[box] (pear) at (\xG,\yCont-2.0) {Pearson's\\correlation};
+        \node[box] (spear) at (\xG,\yCont-3.2) {Spearman's\\correlation};
+        \draw[edge] (corr_par) -- (pear);
+        \draw[edge] (corr_npar) -- (spear);
     \end{tikzpicture}
     }%
-    \caption{Alternative decision tree (TikZ draft) for selecting a statistical test (left-to-right layout).}
+    \caption{Alternative decision tree (TikZ draft) for selecting a statistical test (left-to-right layout; richer test set and intermediate decisions).}
     \label{fig:decisiontree-tikz}
 \end{sidewaysfigure}
 % 
@@ -380,6 +502,15 @@ So far we treated the statistical tests as ``black boxes'' and we just discussed
 Next, we provide a brief overview of some of the most common statistical tests that can be used in BPM research. While a detailed mathematical formulation of the tests along with a discussion of their properties can be found in many statistical textbooks (see, for instance,~\cite{todo}), we here focus on their general idea and intuition. 
 
 \begin{description}
+\item[\textbf{Chi-square test and Fisher's exact test.}]
+These tests are used with categorical data to assess whether two variables are independent (association) or whether group proportions differ (differences between groups), typically via contingency tables. The $\chi^2$ test is a common default in large samples, while Fisher's exact test is often preferred when expected cell counts are small.
+
+\item[\textbf{McNemar test and Cochran's Q test.}]
+These tests address categorical outcomes with paired/repeated measurements. McNemar's test is commonly used for paired binary outcomes with two conditions (e.g., before/after). Cochran's Q generalizes this idea to more than two paired conditions for binary outcomes.
+
+\item[\textbf{Stuart--Maxwell test.}]
+This test is used for paired categorical data with more than two categories and can be seen as a generalization of McNemar's setting to multi-category paired tables (testing marginal homogeneity).
+
 \item[\textbf{Student's t-test.}]
 The test is for continuous data, comparing the means of two independent groups. It is commonly applied under the assumption that the data in each group is normally distributed and has equal variances, so that the test falls into the class of parametric tests. This test is referred to as a one-sample Student's t-test, when the one group is actually a sample drawn from a larger population. That is, the null hypothesis then states that the mean of the sample is equal to the population mean. 
 
@@ -400,6 +531,9 @@ Technically, the $p$-value for this test is derived by the U-statistics. It is b
 This non-parametric test is designed for paired data and is commonly applied to ordinal outcomes (or continuous outcomes that violate parametric assumptions). It is most commonly adopted when two groups are paired, i.e., when each observation in one group is associated with a specific observation in the other group. As such, it is used if the assumptions for the paired t-test are not met, for instance, if the data is not normally distributed (a weaker assumption on the symmetry of the distribution is imposed, though). Then, the null hypothesis states that the distribution of paired differences is centered at zero (i.e., no systematic tendency for positive or negative differences).
 
 The respective test statistic is based on the ranks of the differences of the observations. For those differences, the sums of positive and negative ranks are computed, and the smaller of these two sums is used to derive the $p$-value. 
+
+\item[\textbf{ANOVA, Kruskal--Wallis, and Friedman.}]
+When comparing more than two groups on a continuous outcome, ANOVA (analysis of variance) is a classic parametric approach (under distributional and variance assumptions). Kruskal--Wallis is a non-parametric alternative for independent groups. For paired/repeated-measures designs with more than two conditions, Friedman is a common non-parametric choice (with repeated-measures ANOVA being the parametric counterpart).
 
 \item[\textbf{Pearson's correlation.}]
 When assessing the relationship between two continuous variables, Pearson's correlation coefficient $r$ is often adopted. It quantifies the strength and direction of a linear relationship between the two variables. The value of $r$ ranges from -1 to 1, where values close to 1 indicate a strong positive linear relationship, values close to -1 indicate a strong negative linear relationship, and values around 0 suggest no linear relationship. 
@@ -485,6 +619,11 @@ Correlations can reveal meaningful relationships, but they can also be misleadin
 \section{Conclusion}
 \label{sec:conclusion}
 
+Statistics is a central methodological tool in BPM research because it helps us separate signal from noise and communicate uncertainty in a principled way. In this chapter, we focused on hypothesis testing as a widely used inferential paradigm for answering questions such as whether two alternatives differ, whether an association is supported by the data, and how to report evidence responsibly (including effect sizes, study design considerations, and multiple comparisons).
+
+At the same time, hypothesis testing is only one part of statistical inference. Many BPM questions are naturally expressed in terms of \emph{estimation}: how large is the difference, how strong is the relationship, and how uncertain are these quantities? Confidence intervals and related uncertainty summaries complement (and sometimes replace) binary ``significant / not significant'' narratives by showing a range of plausible effect sizes under a statistical model. Likewise, regression models---from linear regression to generalized linear models---provide a coherent framework for relating an outcome to multiple predictors, accommodating covariates and confounders, and supporting both explanation and prediction. In empirical BPM settings (e.g., surveys, experiments, observational datasets), these modeling tools are often the most direct way to express hypotheses about mechanisms and context factors. Comprehensive treatments of statistical inference, including estimation, confidence intervals, and model-based reasoning, can be found in standard references such as~\cite{BickelDoksum2001}.
+
+Ultimately, good statistical practice in BPM is less about selecting a named test and more about aligning the research question, study design, and data characteristics with transparent analysis and reporting. By stating hypotheses clearly, choosing methods that respect measurement scales and dependence structures, reporting effect sizes and uncertainty, and being explicit about exploratory versus confirmatory analyses, BPM researchers can make their empirical and technical claims more trustworthy, reproducible, and useful to both researchers and practitioners.
 
 \bibliographystyle{spmpsci}
 \bibliography{references-andrea}
